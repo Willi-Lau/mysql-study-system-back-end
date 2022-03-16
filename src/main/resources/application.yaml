@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: demo
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/mysqlstudy?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+  redis:
+    host: 47.94.229.158
+    port: 6379
+    password: 12345
+
+mybatis:
+  type-aliases-package: com.lwy.demo.entity
+  mapper-locations: mapper/*.xml
+server:
+  port: 8080
+
