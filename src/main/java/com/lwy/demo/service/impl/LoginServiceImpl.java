@@ -1,5 +1,6 @@
 package com.lwy.demo.service.impl;
 
+import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.config.RedisConfig;
 import com.lwy.demo.dao.LoginDao;
 import com.lwy.demo.service.LoginService;
@@ -33,9 +34,10 @@ public class LoginServiceImpl implements LoginService {
             return false;
         }
         //首先去redis里查找
-        String redisPassword = (String)redisUtil.get(username);
+        String studentNumberRedisPassword = (String)redisUtil.get(InfoConfig.REDIS_USER_STUDENT_NUMBER + username);
+        String identityCardNumberRedisPassword = (String)redisUtil.get(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER + username);
         //如果redis里没有去mysql找
-        if(StringUtils.isEmpty(redisPassword)){
+        if(StringUtils.isEmpty(studentNumberRedisPassword) && StringUtils.isEmpty(identityCardNumberRedisPassword)){
             String mysqlPassword = loginDao.login(username);
             if(mysqlPassword.equals(password)){
                 return true;
@@ -46,7 +48,7 @@ public class LoginServiceImpl implements LoginService {
         }
         else {
             //有的话判断是否相同
-            if(password.equals(redisPassword)){
+            if(password.equals(studentNumberRedisPassword) || password.equals(identityCardNumberRedisPassword)){
                 return true;
             }
             else {
