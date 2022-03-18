@@ -1,15 +1,14 @@
 package com.lwy.demo.controller;
 
 
-import com.lwy.demo.config.RedisConfig;
 import com.lwy.demo.service.LoginService;
-import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
+@RequestMapping("/LoginController")
 public class LoginController {
 
     @Autowired

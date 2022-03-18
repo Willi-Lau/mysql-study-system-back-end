@@ -1,9 +1,7 @@
 package com.lwy.demo.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -13,6 +11,8 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
+@ToString
+@NoArgsConstructor
 public class User implements Serializable {
     String studentNumber;
     String name;
@@ -21,4 +21,6 @@ public class User implements Serializable {
     String phone;
     String university;
     String className;
+
+
 }
