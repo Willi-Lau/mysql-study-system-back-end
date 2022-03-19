@@ -11,4 +11,13 @@ public interface LoginDao {
      */
     @Select("select password from user where studentNumber = #{username} or identityCardNumber = #{username}")
     String login(String username);
+
+    /**
+     *  查询指定用户名的密码
+     * @return password
+     */
+    @Select("select id from user where studentNumber = #{username} or identityCardNumber = #{username}")
+    Integer id(String username);
+
+
 }

@@ -7,13 +7,13 @@ import com.lwy.demo.dao.LoginDao;
 import com.lwy.demo.service.LoginService;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.RedissionBloomFilters;
-import com.lwy.demo.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.xml.ws.ServiceMode;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -61,9 +61,12 @@ public class LoginServiceImpl implements LoginService {
                 return resultDTO;
             }
         }
+        //查询userId
+        Integer id = loginDao.id(username);
         //处理token
-        TokenUtils tokenUtils = new TokenUtils();
-        String token = tokenUtils.token(username);
+        String token = UUID.randomUUID().toString();
+        //key为 uuid-token value 为user表的id 为了方便后续的验证操作
+        redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,1000 * 60 * 60 * 24);
         resultDTO.setObject(token);
         return resultDTO;
     }

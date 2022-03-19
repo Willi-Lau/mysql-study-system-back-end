@@ -9,17 +9,9 @@ import com.lwy.demo.service.RegisterService;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.RedissionBloomFilters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ResourceBundle;
 
 @Service
 @Transactional
