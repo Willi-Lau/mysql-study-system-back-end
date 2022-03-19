@@ -58,8 +58,8 @@ public class RegisterServiceImpl implements RegisterService {
         }
         //查询身份证号
         StringBuilder identityCardNumberStringBuilder = new StringBuilder();
-        identityCardNumberStringBuilder.append(InfoConfig.REDIS_USER_STUDENT_NUMBER);
-        identityCardNumberStringBuilder.append(user.getStudentNumber());
+        identityCardNumberStringBuilder.append(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER);
+        identityCardNumberStringBuilder.append(user.getIdentityCardNumber());
         if(redisUtil.hasKey(identityCardNumberStringBuilder.toString())){
             resultDTO.setObject("此身份证号已注册");
             resultDTO.setType(false);
