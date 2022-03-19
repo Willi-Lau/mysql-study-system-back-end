@@ -1,11 +1,13 @@
 package com.lwy.demo.service.impl;
 
+import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.config.RedisConfig;
 import com.lwy.demo.dao.LoginDao;
 import com.lwy.demo.service.LoginService;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.RedissionBloomFilters;
+import com.lwy.demo.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +29,13 @@ public class LoginServiceImpl implements LoginService {
     private RedissionBloomFilters bloomFilter;
 
     @Override
-    public boolean login(String username, String password){
+    public ResultDTO login(String username, String password){
+        ResultDTO resultDTO = new ResultDTO();
         //首先判断username是否存在 利用布隆过滤器 因为存的是学号和身份证号不会更改
         boolean contains = bloomFilter.containsValue(username);
         if(!contains){
-            return false;
+            resultDTO.setType(false);
+            return resultDTO;
         }
         //首先去redis里查找
         String studentNumberRedisPassword = (String)redisUtil.get(InfoConfig.REDIS_USER_STUDENT_NUMBER + username);
@@ -40,20 +44,27 @@ public class LoginServiceImpl implements LoginService {
         if(StringUtils.isEmpty(studentNumberRedisPassword) && StringUtils.isEmpty(identityCardNumberRedisPassword)){
             String mysqlPassword = loginDao.login(username);
             if(mysqlPassword.equals(password)){
-                return true;
+                resultDTO.setType(true);
             }
             else {
-                return false;
+                resultDTO.setType(false);
+                return resultDTO;
             }
         }
         else {
             //有的话判断是否相同
             if(password.equals(studentNumberRedisPassword) || password.equals(identityCardNumberRedisPassword)){
-                return true;
+                resultDTO.setType(true);
             }
             else {
-                return false;
+                resultDTO.setType(false);
+                return resultDTO;
             }
         }
+        //处理token
+        TokenUtils tokenUtils = new TokenUtils();
+        String token = tokenUtils.token(username);
+        resultDTO.setObject(token);
+        return resultDTO;
     }
 }

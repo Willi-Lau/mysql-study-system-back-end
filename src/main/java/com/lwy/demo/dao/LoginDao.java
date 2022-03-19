@@ -9,6 +9,6 @@ public interface LoginDao {
      *  查询指定用户名的密码
      * @return password
      */
-    @Select("select password from user where username = #{username}")
+    @Select("select password from user where studentNumber = #{username} or identityCardNumber = #{username}")
     String login(String username);
 }

@@ -1,6 +1,7 @@
 package com.lwy.demo.controller;
 
 
+import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -15,10 +16,11 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public boolean login(@RequestParam String username,
-                         @RequestParam String password){
+    public ResultDTO login(@RequestParam String username,
+                           @RequestParam String password){
+        ResultDTO resultDto = new ResultDTO();
         if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
-            return false;
+            resultDto.setType(false);
         }
         return loginService.login(username,password);
     }
