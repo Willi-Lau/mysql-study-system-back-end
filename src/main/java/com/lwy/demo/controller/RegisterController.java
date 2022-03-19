@@ -1,5 +1,6 @@
 package com.lwy.demo.controller;
 
+import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.RegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class RegisterController {
     private RegisterService registerService;
 
     @PostMapping("/register")
-    public boolean register(@RequestBody User user) throws Exception {
+    public ResultDTO register(@RequestBody User user) throws Exception {
         return registerService.register(user);
     }
 }
