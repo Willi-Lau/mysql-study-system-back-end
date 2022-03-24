@@ -12,9 +12,21 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResultDTO implements Serializable {
+    /**
+     * 返回成功还是失败
+     */
     private Boolean type;
+    /**
+     * 返回对象
+     */
     private Object object;
+    /**
+     * 返回List
+     */
     private List<Object> list;
+    /**
+     * 返回Map
+     */
     private Map<Object,Object> map;
 
 }

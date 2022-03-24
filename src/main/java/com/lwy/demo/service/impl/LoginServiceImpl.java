@@ -66,7 +66,7 @@ public class LoginServiceImpl implements LoginService {
         //处理token
         String token = UUID.randomUUID().toString();
         //key为 uuid-token value 为user表的id 为了方便后续的验证操作
-        redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,1000 * 60 * 60 * 24);
+        redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,60 * 60 * 24);
         resultDTO.setObject(token);
         return resultDTO;
     }
