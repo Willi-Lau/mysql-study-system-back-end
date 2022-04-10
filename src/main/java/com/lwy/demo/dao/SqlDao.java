@@ -35,6 +35,10 @@ public class SqlDao {
                 user.setName(resultSet.getString("name"));
                 user.setStudentNumber(resultSet.getString("studentNumber"));
                 user.setIdentityCardNumber(resultSet.getString("identityCardNumber"));
+                user.setPhone(resultSet.getString("phone"));
+                user.setPassword(resultSet.getString("password"));
+                user.setClassName(resultSet.getString("className"));
+                user.setUniversity(resultSet.getString("university"));
             }
             conn.commit();
         }

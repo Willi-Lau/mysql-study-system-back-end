@@ -23,7 +23,7 @@ public class RedissionBloomFilters {
 
     public RedissionBloomFilters(){
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        config.useSingleServer().setAddress("redis://192.168.10.177:6379");
         config.useSingleServer().setPassword("12345");
         //构造Redisson
         RedissonClient redisson = Redisson.create(config);

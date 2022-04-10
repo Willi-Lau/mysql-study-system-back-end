@@ -2,6 +2,8 @@ package com.lwy.demo.service.impl;
 
 
 import com.lwy.demo.TO.ResultDTO;
+import com.lwy.demo.TO.SqlResultDTO;
+import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.dao.SqlDao;
 import com.lwy.demo.entity.User;
@@ -13,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class SqlServiceImpl implements SqlService {
 
     @Autowired
@@ -48,7 +50,7 @@ public class SqlServiceImpl implements SqlService {
         List<String> columnNameList = new ArrayList<>();
         //解析sql 查看是 * 还是指定了特定的字段 0 = * | 1 = id | 2 = table1.id , table2.*
         String sql2 = analysisColumn(sql, tableNameList, user);
-        System.out.println(sql2);
+    //    System.out.println(sql2);
         columnNameList = this.selectColumnList;
         //执行sql 执行查询返回查询结果
         List<Map<String, String>> selectExecuteList = sqlDao.selectExecute(user, sql2, columnNameList);
@@ -160,6 +162,77 @@ public class SqlServiceImpl implements SqlService {
         return resultDTO;
     }
 
+    @Override
+    public ResultDTO sqlExplain(User user, String sql) throws SQLException {
+        //查看sql语句是否有分号结尾 如果有去掉
+        String[] s = sql.split(" ");
+        StringBuilder sql1 = new StringBuilder();
+        for (int i = 0; i < s.length; i++) {
+            if (i == s.length - 1 && (s[i].equals(";") || s[i].endsWith(";"))) {
+                s[i] = s[i].substring(0, s[i].length() - 1);
+            }
+            sql1.append(s[i]);
+            sql1.append(" ");
+        }
+        sql = sql1.toString();
+        ResultDTO resultDTO = new ResultDTO();
+
+        List<String> columnNameList = new ArrayList<>();
+        Collections.addAll(columnNameList, "id","select_type","table","type","possible_keys","key","ref","rows","Extra");
+        //执行sql 执行查询返回查询结果
+        List<Map<String, String>> selectExecuteList = sqlDao.selectExecute(user, sql, columnNameList);
+        //根据字段进行封装 封装结果到Map 结构为List<Map<String,String>>
+        String errorLog = selectExecuteList.get(0).get("errorLog");
+        if (StringUtils.isEmpty(errorLog)) {
+            resultDTO.setObject("sql success");
+        } else {
+            resultDTO.setObject(errorLog);
+        }
+
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("column", columnNameList);
+        resultDTO.getMap().put("result", selectExecuteList);
+        resultDTO.getMap().put("table", "explain");
+        resultDTO.getMap().put("sql", sql);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO sqlShowIndex(User user, String sql) throws SQLException {
+        //查看sql语句是否有分号结尾 如果有去掉
+        String[] s = sql.split(" ");
+        StringBuilder sql1 = new StringBuilder();
+        for (int i = 0; i < s.length; i++) {
+            if (i == s.length - 1 && (s[i].equals(";") || s[i].endsWith(";"))) {
+                s[i] = s[i].substring(0, s[i].length() - 1);
+            }
+            sql1.append(s[i]);
+            sql1.append(" ");
+        }
+        sql = sql1.toString();
+        ResultDTO resultDTO = new ResultDTO();
+
+        List<String> columnNameList = new ArrayList<>();
+        Collections.addAll(columnNameList, "Table","Non_unique","Key_name","Seq_in_index","Column_name","Collation","Cardinality","Sub_part","Packed","Null"
+        ,"Index_type","Comment","Index_comment");
+        //执行sql 执行查询返回查询结果
+        List<Map<String, String>> selectExecuteList = sqlDao.selectExecute(user, sql, columnNameList);
+        //根据字段进行封装 封装结果到Map 结构为List<Map<String,String>>
+        String errorLog = selectExecuteList.get(0).get("errorLog");
+        if (StringUtils.isEmpty(errorLog)) {
+            resultDTO.setObject("sql success");
+        } else {
+            resultDTO.setObject(errorLog);
+        }
+
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("column", columnNameList);
+        resultDTO.getMap().put("result", selectExecuteList);
+        resultDTO.getMap().put("table", "explain");
+        resultDTO.getMap().put("sql", sql);
+        return resultDTO;
+    }
+
     private List<String> analysisTableName(String sql) {
         List<String> tableNameList = new ArrayList<>();
         String[] sqlArr = sql.split(" ");
@@ -263,9 +336,25 @@ public class SqlServiceImpl implements SqlService {
             }
             //单表查询
             else {
-                String cloumn1 = split[0];
-                resultSql += " " + tableNameList.get(0) + "." + cloumn1 + " " + tableNameList.get(0) + cloumn1 + " ,";
-                selectColumnList.add(tableNameList.get(0) + cloumn1);
+                //判断是否是聚合函数 如果是不需要处理
+                String column1 = split[0];
+                HashSet<String> set = new HashSet<>();
+                Collections.addAll(set,"count(","sum(","max(","min(");
+                boolean isPolymerization = false;
+                for (String s1 : set){
+                    if(column1.startsWith(s1)){
+                        isPolymerization = true;
+                    }
+                }
+                if(isPolymerization){
+                    resultSql += " " + column1 + " ,";
+                    selectColumnList.add(column1);
+                }
+                else{
+                    resultSql += " " + tableNameList.get(0) + "." + column1 + " " + tableNameList.get(0) + column1 + " ,";
+                    selectColumnList.add(tableNameList.get(0) + column1);
+                }
+
             }
 
         }
@@ -292,4 +381,5 @@ public class SqlServiceImpl implements SqlService {
         return index > 0 ? sql.substring(0, index - 1) : sql;
 
     }
+
 }

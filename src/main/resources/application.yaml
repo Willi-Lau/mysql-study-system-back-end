@@ -11,9 +11,23 @@ spring:
     username: root
     password: root
   redis:
-    host: 127.0.0.1
+    host: 192.168.10.177
     port: 6379
     password: 12345
+  #kafka
+  kafka:
+    bootstrap-servers: 192.168.10.177:9092
+    producer:
+      #      生产者序列化器
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    consumer:
+      #      消费者序列化器
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #      消费者消费的group_id
+      group-id: kafkaTest1
 
 mybatis:
   type-aliases-package: com.lwy.demo.entity

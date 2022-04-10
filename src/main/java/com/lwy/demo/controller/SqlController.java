@@ -1,6 +1,8 @@
 package com.lwy.demo.controller;
 
 import com.lwy.demo.TO.ResultDTO;
+import com.lwy.demo.TO.SqlResultDTO;
+import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.entity.SqlResult;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
@@ -8,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @CrossOrigin
@@ -44,44 +49,46 @@ public class SqlController {
         boolean isSelect = Pattern.matches("^select.+", sql);
         if (isSelect) {
             resultDTO = sqlService.sqlSelect(user, sql);
-        } else if (Pattern.matches("^show.*tables.*", sql)) {
+        } else if (sql.trim().equals("show tables") || sql.trim().equals("show tables;")) {
             resultDTO = sqlService.showTables(user);
-        } else {
+        } else if (Pattern.matches("^explain.*", sql)) {
+            resultDTO = sqlService.sqlExplain(user, sql);
+        }
+        else if (sql.trim().startsWith("show index")) {
+            resultDTO = sqlService.sqlShowIndex(user, sql);
+        }
+        else {
             resultDTO = sqlService.sqlUnSelect(user, sql);
         }
-        if("sql success".equals(resultDTO.getObject())){
+        //对 结果进行评估
+        if ("sql success".equals(resultDTO.getObject())) {
             sqlResult.setResult("success");
-        }
-        else{
+        } else {
             sqlResult.setResult("error");
 
         }
         //解析sql类型
         String[] sqlArr = sql.trim().split(" ");
         String firstSql = sqlArr[0];
-        if(firstSql.equals("select")){
+        if (firstSql.equals("select")) {
             sqlResult.setType("select");
-        }
-        else if(firstSql.equals("insert")){
+        } else if (firstSql.equals("insert")) {
             sqlResult.setType("insert");
-        }
-        else if(firstSql.equals("update")){
+        } else if (firstSql.equals("update")) {
             sqlResult.setType("update");
-        }
-        else if(firstSql.equals("delete")){
+        } else if (firstSql.equals("delete")) {
             sqlResult.setType("delete");
-        }
-        else {
+        } else {
             sqlResult.setType("other");
         }
         //插入sqlresult
         String sqlResultSql = "insert into sqlrecord(sqlstatement,time,type,result) values( ' ";
-        sqlResultSql += sqlResult.getSqlstatement() + "','" + sqlResult.getTime() + "','" + sqlResult.getType() + "','" + sqlResult.getResult() +"')";
+        sqlResultSql += sqlResult.getSqlstatement() + "','" + sqlResult.getTime() + "','" + sqlResult.getType() + "','" + sqlResult.getResult() + "')";
         //不是sql输入框执行的sql不添加进日志
-        if(isMySql == 1){
-            sqlService.sqlUnSelect(user,sqlResultSql);
+        if (isMySql == 1) {
+            sqlService.sqlUnSelect(user, sqlResultSql);
         }
-        System.out.println(sqlResultSql);
+        // System.out.println(sqlResultSql);
         return resultDTO;
     }
 
@@ -90,6 +97,5 @@ public class SqlController {
         ResultDTO exampleSql = sqlService.getExampleSql();
         return exampleSql;
     }
-
 
 }
