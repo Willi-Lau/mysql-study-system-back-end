@@ -20,6 +20,7 @@ public class FrogetPasswordController {
     @Autowired
     private ForgetPasswordService forgetPasswordService;
 
+
     @PostMapping("/changePassword")
     public ResultDTO changePassword(@RequestParam String phone,
                                     @RequestParam String password){

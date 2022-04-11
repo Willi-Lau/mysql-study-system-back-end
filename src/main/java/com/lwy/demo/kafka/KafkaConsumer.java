@@ -1,6 +1,7 @@
 package com.lwy.demo.kafka;
 
 import com.lwy.demo.config.InfoConfig;
+import com.lwy.demo.controller.MessageController;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.utils.RedisUtil;
 
@@ -21,6 +22,10 @@ public class KafkaConsumer {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private MessageController messageController;
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @KafkaListener(topics = "manager")
@@ -35,8 +40,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = "canal")
     public void consumeCanal(String msg) throws JSONException { // 参数: 收到的 value
-        //日志部分
-        Logger logger = LoggerFactory.getLogger(getClass());
         logger.info(msg);
         JSONObject jsonObject = new JSONObject(msg);
         //符合修改 user表操作在进行更改
@@ -62,6 +65,17 @@ public class KafkaConsumer {
             //修改身份证密码部分
             redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+userMap.get("identityCardNumber"),userMap.get("password"));
         }
+
+    }
+
+    /**
+     * kafka 消费 管理员发送全体通知
+     * @param msg
+     */
+    @KafkaListener(topics = "managerSendMessage")
+    public void consumeManagerSendMagess(String msg) {
+       //调用SSE
+        messageController.push(msg);
 
     }
 }

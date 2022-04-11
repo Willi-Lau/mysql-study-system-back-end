@@ -1,32 +1,36 @@
 package com.lwy.demo.controller;
 
+import com.lwy.demo.utils.SseEmitterServer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 
-@CrossOrigin // 跨域（看具体情况）
+/**
+ * 此接口为 SpringMVC SSE 作用为后端单向向前端传送数据
+ */
 @RestController
+@CrossOrigin
 public class MessageController {
     SseEmitter sseEmitter = null;
 
-    @GetMapping("/subscribe")
-    public SseEmitter subscribe() {
-        // 设置超时时间为5分钟
-        sseEmitter = new SseEmitter(5*60*1000L);
-        // 直接返回 SseEmitter 对象就可以和客户端连接
-        return sseEmitter;
+    /**
+     * 用于创建连接 前端连接端口写这个  必须这么写
+     */
+    @GetMapping("/connect")
+    public SseEmitter connect() {
+        return SseEmitterServer.connect("15");
     }
 
+    /**
+     * 发送消息
+     * @param message
+     * @return
+     */
     @GetMapping("/push/{message}")
-    public void push(@PathVariable(name = "message") String message) throws IOException {
-        sseEmitter.send(message);
-    }
-
-
-    public void pushByKafka(String message) throws IOException {
-        sseEmitter.send(message);
+    public ResponseEntity<String> push(@PathVariable(name = "message") String message) {
+        SseEmitterServer.batchSendMessage(message);
+        return ResponseEntity.ok("WebSocket 推送消息给所有人");
     }
 }
 
