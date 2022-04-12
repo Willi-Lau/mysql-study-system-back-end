@@ -4,16 +4,22 @@ import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.config.RedisConfig;
 import com.lwy.demo.dao.LoginDao;
+import com.lwy.demo.dao.LoginHistoryDao;
 import com.lwy.demo.entity.Manager;
+import com.lwy.demo.entity.ManagerLoginHistory;
+import com.lwy.demo.entity.UserLoginHistory;
 import com.lwy.demo.service.LoginService;
+import com.lwy.demo.utils.LocalHostUtil;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.RedissionBloomFilters;
+import com.lwy.demo.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.xml.ws.ServiceMode;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -30,8 +36,14 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private RedissionBloomFilters bloomFilter;
 
+    @Autowired
+    private LocalHostUtil localHostUtil;
+
+    @Autowired
+    private LoginHistoryDao loginHistoryDao;
+
     @Override
-    public ResultDTO login(String username, String password){
+    public ResultDTO login(String username, String password) throws UnknownHostException {
         ResultDTO resultDTO = new ResultDTO();
         //首先判断username是否存在 利用布隆过滤器 因为存的是学号和身份证号不会更改
         boolean contains = bloomFilter.containsValue(username);
@@ -65,17 +77,30 @@ public class LoginServiceImpl implements LoginService {
         }
         //查询userId
         Integer id = loginDao.id(username);
+        //去redis 黑名单查询是否存在
+        boolean isBlackList = redisUtil.sHasKey(InfoConfig.USER_BLACK_LIST, id);
+        if(isBlackList){
+            resultDTO.setType(true);
+            resultDTO.setObject("拉黑");
+            return resultDTO;
+        }
         //处理token
         String token = UUID.randomUUID().toString();
         //key为 uuid-token value 为user表的id 为了方便后续的验证操作
         redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,60 * 60 * 24);
         resultDTO.setObject(token);
         //存进用户登录历史记录表中
+        UserLoginHistory userLoginHistory = new UserLoginHistory();
+        userLoginHistory.setLoginTime(TimeUtils.getNowTime().toString());
+        userLoginHistory.setUserId(id);
+        userLoginHistory.setLocalHostAddress(localHostUtil.getLocalHost());
+        loginHistoryDao.addUserLoginHistory(userLoginHistory);
+
         return resultDTO;
     }
 
     @Override
-    public ResultDTO managerLogin(String username, String password) {
+    public ResultDTO managerLogin(String username, String password) throws UnknownHostException {
         ResultDTO resultDTO = new ResultDTO();
         //首先利用bloomfilter查看管理员账户是否存在
         boolean containsManager = bloomFilter.containsValue(InfoConfig.BLOOM_FILTER_MANAGER + username);
@@ -124,6 +149,13 @@ public class LoginServiceImpl implements LoginService {
                 return resultDTO;
             }
         }
+        //去redis 黑名单查询是否存在
+        boolean isBlackList = redisUtil.sHasKey(InfoConfig.MANAGER_BLACK_LIST, id);
+        if(isBlackList){
+            resultDTO.setType(true);
+            resultDTO.setObject("拉黑");
+            return resultDTO;
+        }
         //最后根据账户是否正确决定是否分配token
         if(resultDTO.getType()){
             //处理token
@@ -131,6 +163,12 @@ public class LoginServiceImpl implements LoginService {
             //key为 uuid-token value 为user表的id 为了方便后续的验证操作
             redisUtil.set(InfoConfig.REDIS_TOKEN_MANAGER_LOGIN_INFO+token,id,60 * 60 * 24);
             resultDTO.getMap().put("token",token);
+            //存进用户登录历史记录表中
+            ManagerLoginHistory managerLoginHistory = new ManagerLoginHistory();
+            managerLoginHistory.setLoginTime(TimeUtils.getNowTime().toString());
+            managerLoginHistory.setUserId(id);
+            managerLoginHistory.setLocalHostAddress(localHostUtil.getLocalHost());
+            loginHistoryDao.addManagerLoginHistory(managerLoginHistory);
         }
         return resultDTO;
     }

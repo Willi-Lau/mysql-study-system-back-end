@@ -21,4 +21,5 @@ public class User implements Serializable {
     String phone;
     String university;
     String className;
+    String state;
 }

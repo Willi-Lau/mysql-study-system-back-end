@@ -30,7 +30,7 @@ public class RegisterDao {
             conn = DriverManager.getConnection(url, InfoConfig.JDBC_USERNAME, InfoConfig.JDBC_PASSWORD);
             conn.setAutoCommit(false);
             stat = conn.createStatement();
-            preparedStatement = conn.prepareStatement("insert into user (name,studentNumber,identityCardNumber,password,phone,university,className)values (?,?,?,?,?,?,?)");
+            preparedStatement = conn.prepareStatement("insert into user (name,studentNumber,identityCardNumber,password,phone,university,className,state)values (?,?,?,?,?,?,?,?)");
             //存入 user表
             preparedStatement.setString(1,user.getName());
             preparedStatement.setString(2,user.getStudentNumber());
@@ -39,6 +39,7 @@ public class RegisterDao {
             preparedStatement.setString(5,user.getPhone());
             preparedStatement.setString(6,user.getUniversity());
             preparedStatement.setString(7,user.getClassName());
+            preparedStatement.setString(8,"1");
             boolean userResult = preparedStatement.execute();
             //为该用户新建一个数据库 库名字为 stu+学号
             StringBuilder databasesName = new StringBuilder();

@@ -29,6 +29,7 @@ public class UserDTO implements Serializable {
     Integer otherNumber;
     Integer successNumber;
     Integer errorNumber;
+    String state;
 
     public static UserDTO userTransformUserDTO(User user){
         UserDTO userDTO = new UserDTO();

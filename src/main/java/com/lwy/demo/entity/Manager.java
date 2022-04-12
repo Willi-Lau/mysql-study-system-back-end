@@ -18,4 +18,5 @@ public class Manager implements Serializable {
     String managerNumber;
     String password;
     String level;
+    String state;
 }

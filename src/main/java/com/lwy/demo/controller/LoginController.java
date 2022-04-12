@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownHostException;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/LoginController")
@@ -17,7 +19,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResultDTO login(@RequestParam String username,
-                           @RequestParam String password){
+                           @RequestParam String password) throws UnknownHostException {
         ResultDTO resultDto = new ResultDTO();
         if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
             resultDto.setType(false);
@@ -27,7 +29,7 @@ public class LoginController {
 
     @PostMapping("/managerLogin")
     public ResultDTO managerLogin(@RequestParam String username,
-                                  @RequestParam String password){
+                                  @RequestParam String password) throws UnknownHostException {
         ResultDTO resultDto = new ResultDTO();
         if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
             resultDto.setType(false);

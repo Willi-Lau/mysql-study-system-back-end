@@ -16,4 +16,5 @@ public class ManagerDTO {
     String managerNumber;
     String password;
     String level;
+    String state;
 }
