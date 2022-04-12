@@ -4,6 +4,7 @@ import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.config.RedisConfig;
 import com.lwy.demo.dao.LoginDao;
+import com.lwy.demo.entity.Manager;
 import com.lwy.demo.service.LoginService;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.RedissionBloomFilters;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.xml.ws.ServiceMode;
+import java.util.HashMap;
 import java.util.UUID;
 
 @Service
@@ -68,6 +70,68 @@ public class LoginServiceImpl implements LoginService {
         //key为 uuid-token value 为user表的id 为了方便后续的验证操作
         redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,60 * 60 * 24);
         resultDTO.setObject(token);
+        //存进用户登录历史记录表中
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO managerLogin(String username, String password) {
+        ResultDTO resultDTO = new ResultDTO();
+        //首先利用bloomfilter查看管理员账户是否存在
+        boolean containsManager = bloomFilter.containsValue(InfoConfig.BLOOM_FILTER_MANAGER + username);
+        if(!containsManager){
+            resultDTO.setType(false);
+            resultDTO.setObject("用户不存在");
+            return resultDTO;
+        }
+        //去redis查找 redis key "ManagerNumber" value "password level"
+        String redisManagerPasswordAndLevel =(String)redisUtil.get(InfoConfig.REDIS_MANAGER_NUMBER + username);
+        String[] redisManagerInfoArray = redisManagerPasswordAndLevel.split(" ");
+        String redisManagerPassword = null;
+        String redisManagerLevel = null;
+        //存放返回信息的map
+        HashMap resultInfo = new HashMap(16);
+        resultDTO.setMap(resultInfo);
+        Integer id = 0;
+        //如果不是空 判断
+        if(!StringUtils.isEmpty(redisManagerPasswordAndLevel)){
+             redisManagerPassword = redisManagerInfoArray[0];
+             redisManagerLevel= redisManagerInfoArray[1];
+             //密码和redis里的一样 可以登录
+             if(redisManagerPassword.equals(password)){
+                 resultDTO.setType(true);
+                 resultInfo.put("level",redisManagerLevel);
+                 id = loginDao.managerId(username);
+             }
+             else {
+                 resultDTO.setType(false);
+                 resultDTO.setObject("密码错误");
+                 return resultDTO;
+             }
+        }
+        //是空 去mysql查找
+        else {
+            Manager manager = loginDao.loginManager(username);
+            String mysqlPassword = manager.getPassword();
+            if(mysqlPassword.equals(password)){
+                resultDTO.setType(true);
+                resultInfo.put("level",manager.getLevel());
+                id = manager.getId();
+            }
+            else {
+                resultDTO.setType(false);
+                resultDTO.setObject("密码错误");
+                return resultDTO;
+            }
+        }
+        //最后根据账户是否正确决定是否分配token
+        if(resultDTO.getType()){
+            //处理token
+            String token = UUID.randomUUID().toString();
+            //key为 uuid-token value 为user表的id 为了方便后续的验证操作
+            redisUtil.set(InfoConfig.REDIS_TOKEN_MANAGER_LOGIN_INFO+token,id,60 * 60 * 24);
+            resultDTO.getMap().put("token",token);
+        }
         return resultDTO;
     }
 }

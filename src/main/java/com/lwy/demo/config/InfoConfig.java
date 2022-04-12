@@ -13,7 +13,11 @@ public class InfoConfig {
     public static String JDBC_USERNAME = "dsp";
     public static String JDBC_PASSWORD = "dsp";
     public static String REDIS_TOKEN_LOGIN_INFO = "REDIS_TOKEN_LOGIN_INFO";
+    public static String REDIS_TOKEN_MANAGER_LOGIN_INFO = "REDIS_TOKEN_MANAGER_LOGIN_INFO";
     public static String REDIS_SQL_EXAMPLE_ = "REDIS_SQL_EXAMPLE_";
+    public static String BLOOM_FILTER_MANAGER = "manager";
+    public static String REDIS_MANAGER_NUMBER = "REDIS_MANAGER_NUMBER";
+    public static String REDIS_MANAGER_LEVEL = "REDIS_MANAGER_LEVEL";
 
 
 

@@ -24,4 +24,14 @@ public class LoginController {
         }
         return loginService.login(username,password);
     }
+
+    @PostMapping("/managerLogin")
+    public ResultDTO managerLogin(@RequestParam String username,
+                                  @RequestParam String password){
+        ResultDTO resultDto = new ResultDTO();
+        if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
+            resultDto.setType(false);
+        }
+        return loginService.managerLogin(username,password);
+    }
 }

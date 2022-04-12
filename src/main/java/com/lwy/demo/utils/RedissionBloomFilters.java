@@ -27,10 +27,10 @@ public class RedissionBloomFilters {
         config.useSingleServer().setPassword("12345");
         //构造Redisson
         RedissonClient redisson = Redisson.create(config);
-
         bloomFilter = redisson.getBloomFilter("userLoginFilter");
         //初始化布隆过滤器：预计元素为100000000L,误差率为3%
         bloomFilter.tryInit(100000000L,0.03);
+
     }
 
     public void addValue(String s){
