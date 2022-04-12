@@ -33,7 +33,6 @@ public class KafkaProducer {
         ResultDTO resultDTO = new ResultDTO();
         //发送message
         ListenableFuture<SendResult<String, String>> listenableFuture = kafka.send(topic, message);
-
         //发送成功回调
         SuccessCallback<SendResult<String, String>> successCallback = new SuccessCallback<SendResult<String, String>>() {
             @Override
@@ -44,7 +43,6 @@ public class KafkaProducer {
                 resultDTO.setObject(result);
             }
         };
-
         //发送失败回调
         FailureCallback failureCallback = new FailureCallback() {
             @Override
