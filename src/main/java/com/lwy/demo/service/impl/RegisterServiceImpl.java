@@ -2,8 +2,8 @@ package com.lwy.demo.service.impl;
 
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.config.InfoConfig;
-import com.lwy.demo.dao.LoginDao;
-import com.lwy.demo.dao.RegisterDao;
+import com.lwy.demo.dao.jdbc.RegisterDao;
+import com.lwy.demo.dao.mybatis.SchoolDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.RegisterService;
 import com.lwy.demo.utils.RedisUtil;
@@ -25,6 +25,9 @@ public class RegisterServiceImpl implements RegisterService {
 
     @Autowired
     private RedissionBloomFilters redissonBloomFilter;
+
+    @Autowired
+    private SchoolDao schoolDao;
 
     @Override
     public ResultDTO register(User user) throws Exception {
@@ -58,6 +61,7 @@ public class RegisterServiceImpl implements RegisterService {
             return resultDTO;
         }
         //开始创建
+        user.setState("1");
         boolean registerMysqlResult = registerDao.register(user);
         if(!registerMysqlResult){
             resultDTO.setObject("超时，请重试");
@@ -65,12 +69,14 @@ public class RegisterServiceImpl implements RegisterService {
             return resultDTO;
         }
         //存入redis
-        redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user.getPassword());
-        redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user.getPassword());
+        redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user);
+        redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user);
         //存入bloom-filter
         redissonBloomFilter.addValue(user.getIdentityCardNumber());
         redissonBloomFilter.addValue(user.getStudentNumber());
         resultDTO.setType(true);
+        //把学校的人数+1
+        schoolDao.addSchoolNum(user.getUniversity());
         return resultDTO;
     }
 }

@@ -1,4 +1,4 @@
-package com.lwy.demo.dao;
+package com.lwy.demo.dao.jdbc;
 
 
 import com.lwy.demo.config.InfoConfig;

@@ -2,22 +2,17 @@ package com.lwy.demo.service.impl;
 
 
 import com.lwy.demo.TO.ResultDTO;
-import com.lwy.demo.TO.SqlResultDTO;
-import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.config.InfoConfig;
-import com.lwy.demo.dao.SqlDao;
+import com.lwy.demo.dao.jdbc.SqlDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
 import com.lwy.demo.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SqlServiceImpl implements SqlService {

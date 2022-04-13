@@ -14,6 +14,7 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 public class User implements Serializable {
+    Integer id;
     String studentNumber;
     String name;
     String identityCardNumber;

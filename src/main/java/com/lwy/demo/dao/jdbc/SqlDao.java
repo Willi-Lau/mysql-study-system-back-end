@@ -1,4 +1,4 @@
-package com.lwy.demo.dao;
+package com.lwy.demo.dao.jdbc;
 
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.config.InfoConfig;
@@ -32,6 +32,7 @@ public class SqlDao {
 
             user= new User();
             while (resultSet.next()){
+                user.setId(resultSet.getInt("id"));
                 user.setName(resultSet.getString("name"));
                 user.setStudentNumber(resultSet.getString("studentNumber"));
                 user.setIdentityCardNumber(resultSet.getString("identityCardNumber"));
@@ -39,6 +40,7 @@ public class SqlDao {
                 user.setPassword(resultSet.getString("password"));
                 user.setClassName(resultSet.getString("className"));
                 user.setUniversity(resultSet.getString("university"));
+                user.setState(resultSet.getString("state"));
             }
             conn.commit();
         }

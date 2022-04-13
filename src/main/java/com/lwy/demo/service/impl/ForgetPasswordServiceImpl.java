@@ -1,6 +1,7 @@
 package com.lwy.demo.service.impl;
 
-import com.lwy.demo.dao.ForgetPasswordDao;
+
+import com.lwy.demo.dao.mybatis.UserDao;
 import com.lwy.demo.service.ForgetPasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,13 @@ import java.util.HashMap;
 public class ForgetPasswordServiceImpl implements ForgetPasswordService {
 
     @Autowired
-    private ForgetPasswordDao forgetPasswordDao;
+    private UserDao userDao;
 
     @Override
     public void changePassword(String phone, String password) {
-        HashMap<String,String> map = new HashMap<>();
+        HashMap<String,String> map = new HashMap<>(16);
         map.put("phone",phone);
         map.put("password",password);
-        forgetPasswordDao.changePassword(map);
+        userDao.changePassword(map);
     }
 }

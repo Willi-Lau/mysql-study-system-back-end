@@ -1,4 +1,4 @@
-package com.lwy.demo.dao;
+package com.lwy.demo.dao.mybatis;
 
 import com.lwy.demo.entity.ManagerLoginHistory;
 import com.lwy.demo.entity.UserLoginHistory;

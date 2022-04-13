@@ -14,6 +14,7 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 public class UserDTO implements Serializable {
+    Integer id;
     String studentNumber;
     String name;
     String identityCardNumber;
@@ -29,7 +30,7 @@ public class UserDTO implements Serializable {
     Integer otherNumber;
     Integer successNumber;
     Integer errorNumber;
-    String state;
+    boolean state;
 
     public static UserDTO userTransformUserDTO(User user){
         UserDTO userDTO = new UserDTO();
@@ -40,6 +41,8 @@ public class UserDTO implements Serializable {
         userDTO.setUniversity(user.getUniversity());
         userDTO.setClassName(user.getClassName());
         userDTO.setPhone(user.getPhone());
+        userDTO.setId(user.getId());
+        userDTO.setState(user.getState().equals("1") ? true : false);
         return userDTO;
     }
 }
