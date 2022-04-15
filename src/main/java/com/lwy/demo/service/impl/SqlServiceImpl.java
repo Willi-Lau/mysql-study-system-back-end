@@ -7,6 +7,8 @@ import com.lwy.demo.dao.jdbc.SqlDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
 import com.lwy.demo.utils.RedisUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -25,8 +27,11 @@ public class SqlServiceImpl implements SqlService {
 
     List<String> selectColumnList = null;
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public ResultDTO sqlSelect(User user, String sql) throws SQLException {
+
         //查看sql语句是否有分号结尾 如果有去掉
         String[] s = sql.split(" ");
         StringBuilder sql1 = new StringBuilder();
@@ -45,7 +50,7 @@ public class SqlServiceImpl implements SqlService {
         List<String> columnNameList = new ArrayList<>();
         //解析sql 查看是 * 还是指定了特定的字段 0 = * | 1 = id | 2 = table1.id , table2.*
         String sql2 = analysisColumn(sql, tableNameList, user);
-    //    System.out.println(sql2);
+        logger.info("拼接SQL结果:"+sql2);
         columnNameList = this.selectColumnList;
         //执行sql 执行查询返回查询结果
         List<Map<String, String>> selectExecuteList = sqlDao.selectExecute(user, sql2, columnNameList);
@@ -286,7 +291,7 @@ public class SqlServiceImpl implements SqlService {
         //如果条件里包含单个 * 则拼接from里所有的部分
         boolean isIncludeStar = false;
         for (String s : arr2) {
-            if (s.equals("*")) {
+            if (s.contains("*") && !s.contains(".*")) {
                 isIncludeStar = true;
             }
         }
@@ -298,11 +303,12 @@ public class SqlServiceImpl implements SqlService {
                     resultSql += " " + table + "." + cloumnName + " " + table + cloumnName + " ,";
                     selectColumnList.add(table + cloumnName);
                 }
-                resultSql = resultSql.substring(0, resultSql.length() - 2);
-                resultSql += fromSQL;
-                return resultSql;
-            }
+                resultSql = resultSql.substring(0, resultSql.length() - 2) + ",";
 
+            }
+            resultSql = resultSql.substring(0,resultSql.length() - 1);
+            resultSql += fromSQL;
+            return resultSql;
         }
         //如果不包含 分别筛选内容进行拼接
         for (String s : arr2) {
