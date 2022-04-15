@@ -81,15 +81,15 @@ public class UserServiceImpl implements UserService {
         List<SqlResultDTO> sqlResultDTOList = new ArrayList<>();
         for (HashMap<String,String> map : list){
             SqlResultDTO sqlResultDTO = new SqlResultDTO();
-            sqlResultDTO.setId(Integer.parseInt(map.get("sqlrecordid")));
-            sqlResultDTO.setSqlstatement(map.get("sqlrecordsqlstatement"));
+            sqlResultDTO.setId(Integer.parseInt(map.get("sqlrecordId")));
+            sqlResultDTO.setSqlstatement(map.get("sqlrecordSqlstatement"));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            Date date = sdf.parse(sdf.format(Long.parseLong(map.get("sqlrecordtime"))));
+            Date date = sdf.parse(sdf.format(Long.parseLong(map.get("sqlrecordTime"))));
             sqlResultDTO.setTime( sdf.format(date));
 
-            sqlResultDTO.setType(map.get("sqlrecordtype"));
-            sqlResultDTO.setResult(map.get("sqlrecordresult"));
+            sqlResultDTO.setType(map.get("sqlrecordType"));
+            sqlResultDTO.setResult(map.get("sqlrecordResult"));
             sqlResultDTOList.add(sqlResultDTO);
         }
         return sqlResultDTOList;

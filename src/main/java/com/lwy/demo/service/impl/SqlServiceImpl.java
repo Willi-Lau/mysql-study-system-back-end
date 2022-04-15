@@ -147,7 +147,6 @@ public class SqlServiceImpl implements SqlService {
         resultList.add(map3);
         //查询show tables
         String showTablesExample = (String) redisUtil.get(InfoConfig.REDIS_SQL_EXAMPLE_ + "SHOWTABLES");
-        System.out.println(showTablesExample);
         HashMap<String, String> map4 = new HashMap<>(16);
         map4.put("example", showTablesExample);
         map4.put("type", "获取所有的表的名字");
@@ -297,7 +296,7 @@ public class SqlServiceImpl implements SqlService {
         //如果条件里包含单个 * 则拼接from里所有的部分
         boolean isIncludeStar = false;
         for (String s : arr2) {
-            if (s.contains("*") && !s.contains(".*")) {
+            if (s.equals("*")) {
                 isIncludeStar = true;
             }
         }

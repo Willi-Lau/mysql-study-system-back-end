@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.HashMap;
 import java.util.List;
 
 @SpringBootTest
@@ -39,6 +40,11 @@ public class AddManagerToBloomFilter {
         for (Manager manager : managerList){
             redisUtil.set(InfoConfig.REDIS_MANAGER_NUMBER + manager.getManagerNumber() , manager);
         }
+
+        HashMap map = new HashMap(16);
+        map.put(1,1);
+        map.put("12","23");
+        System.out.println(map);
 
     }
 }

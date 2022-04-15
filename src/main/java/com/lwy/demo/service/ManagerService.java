@@ -4,6 +4,7 @@ import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.entity.User;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 
 public interface ManagerService {
@@ -13,4 +14,6 @@ public interface ManagerService {
     public void changeState(Integer id,Boolean state);
 
     public ResultDTO getSchoolList() throws ParseException;
+
+    public ResultDTO getConditionStudent(HashMap<String,String> map);
 }

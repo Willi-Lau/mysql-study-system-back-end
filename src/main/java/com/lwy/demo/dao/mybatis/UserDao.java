@@ -31,12 +31,19 @@ public interface UserDao {
     @Update("update user set state = #{state} where id = #{id}")
     void changeState(HashMap map);
 
-
-
     /**
      * 修改密码
      * @param map
      */
     @Update("update user set password = #{password} where phone = #{phone}")
     void changePassword( HashMap<String,String> map);
+    /**
+     * 根据条件查询用户
+     */
+    List<User> getUserByCondition(HashMap<String,Object> map);
+    /**
+     * 查询用户数量
+     */
+    @Select("select max(id) from user")
+    Integer getMaxId();
 }

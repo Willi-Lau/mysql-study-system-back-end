@@ -18,4 +18,5 @@ public interface ManagerDao {
      */
     @Select("select * from manager")
     List<Manager> getManagerList();
+
 }

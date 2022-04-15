@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwy.demo.dao.mybatis.UserDao">
+
+
+    <select id="getUserByCondition" parameterType="map" resultType ="com.lwy.demo.entity.User">
+        select *
+        from user
+        <where>
+            1 = 1
+                <if test="idOptionsValue == '精确查询'">
+
+                    <if test="idPreciseFlag == 'yes'">
+
+                        and id in
+                        <foreach collection="idPreciseList" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+
+
+                </if>
+                <if test="idOptionsValue == '模糊查询'">
+                    and id like  #{idIndistinct}
+                </if>
+
+                <if test="nameOptionsValue == '精确查询'">
+                    and name in
+                    <foreach collection="namePreciseList" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+
+                <if test="nameOptionsValue == '模糊查询'">
+                    and name like #{nameIndistinct}
+                </if>
+
+
+            <if test="identityCardNumber != ''">
+                and identityCardNumber in
+                <foreach collection="identityCardNumberList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="studentNumber != ''">
+                and studentNumber in
+                <foreach collection="studentNumberList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="phone != ''">
+                and phone in
+                <foreach collection="phoneList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="university != '查询所有'">
+                and university = #{university}
+            </if>
+
+            <if test="state != 3">
+                and state = #{state}
+            </if>
+
+        </where>
+
+
+
+    </select>
+
+</mapper>
