@@ -306,8 +306,8 @@ public class SqlServiceImpl implements SqlService {
             for (String table : tableNameList) {
                 List<String> column = sqlDao.getColumn(user, table);
                 for (String cloumnName : column) {
-                    resultSql += " " + table + "." + cloumnName + " " + table + cloumnName + " ,";
-                    selectColumnList.add(table + cloumnName);
+                    resultSql += " " + table + "." + this.captureString(cloumnName) + " " + table + this.captureString(cloumnName) + " ,";
+                    selectColumnList.add(table + this.captureString(cloumnName));
                 }
                 resultSql = resultSql.substring(0, resultSql.length() - 2) + ",";
 
@@ -316,7 +316,7 @@ public class SqlServiceImpl implements SqlService {
             resultSql += fromSQL;
             return resultSql;
         }
-        //如果不包含 分别筛选内容进行拼接
+        //如果不包含 分别筛选内容进行拼接 arr2 是 [a.id , b.id , b.name]
         for (String s : arr2) {
             String[] split = s.split("\\.");
             //有条件的多表查询
@@ -330,15 +330,16 @@ public class SqlServiceImpl implements SqlService {
                     //拼接到sql
                     //拼接到表字段list
                     for (String cloumnName : column) {
-                        resultSql += " " + table1 + "." + cloumnName + " " + table1 + cloumnName + " ,";
-                        selectColumnList.add(table1 + cloumnName);
+                        resultSql += " " + table1 + "." + this.captureString(cloumnName) + " " + table1 + this.captureString(cloumnName) + " ,";
+                        selectColumnList.add(table1 + this.captureString(cloumnName));
+
                     }
                 }
                 //如果是.id则单独获取
                 else {
                     String table1 = split[0];
-                    resultSql += " " + table1 + "." + split[1] + " " + table1 + split[1] + " ,";
-                    selectColumnList.add(table1 + split[1]);
+                    resultSql += " " + table1 + "." + this.captureString(split[1]) + " " + table1 + this.captureString(split[1]) + " ,";
+                    selectColumnList.add(table1 + this.captureString(split[1]));
                 }
             }
             //单表查询
@@ -387,6 +388,17 @@ public class SqlServiceImpl implements SqlService {
         }
         return index > 0 ? sql.substring(0, index - 1) : sql;
 
+    }
+
+    /**
+     * 首字母小写转大写
+     * @param s
+     * @return
+     */
+    private String captureString(String s){
+        char[] chars = s.toCharArray();
+        chars[0] -= 32;
+        return String.valueOf(chars);
     }
 
 }
