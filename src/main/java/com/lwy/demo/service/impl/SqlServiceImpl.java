@@ -236,9 +236,11 @@ public class SqlServiceImpl implements SqlService {
     private List<String> analysisTableName(String sql) {
         List<String> tableNameList = new ArrayList<>();
         String[] sqlArr = sql.split(" ");
+        int from = 0;
         for (int i = 1; i < sqlArr.length; i++) {
-            if (sqlArr[i - 1].equals("from")) {
+            if (sqlArr[i - 1].equals("from") && from == 0) {
                 tableNameList.add(sqlArr[i]);
+                from ++;
             }
             if (sqlArr[i - 1].equals("join")) {
                 tableNameList.add(sqlArr[i]);
@@ -265,15 +267,19 @@ public class SqlServiceImpl implements SqlService {
         boolean isBetweenSelectAndFrom = false;
         boolean isFromOver = false;
         String selectSql = "";
+        int select = 0;
+        int from = 0;
         for (String s : arr1) {
             //到达select
-            if (s.equals("select")) {
+            if (s.equals("select") && select == 0) {
                 isBetweenSelectAndFrom = true;
+                select++;
                 continue;
             }
-            if (s.equals("from")) {
+            if (s.equals("from") && from == 0) {
                 isBetweenSelectAndFrom = false;
                 isFromOver = true;
+                from++;
                 continue;
             }
             //添加select选项到STRING
