@@ -40,5 +40,18 @@ public class UserController {
         return resultDTO;
     }
 
+    @PostMapping("/getUserInfoAndSqlDataById")
+    public ResultDTO getUserInfoAndSqlDataById(@RequestParam Integer id) throws  Exception{
+        ResultDTO resultDTO = new ResultDTO();
+        User user = userService.getUserById(id);
+        UserDTO userInfo = userService.getUserInfo(user);
+        List<SqlResultDTO> sql = userService.getSql(user);
+        HashMap<Object,Object> map = new HashMap<>(16);
+        map.put("userInfo",userInfo);
+        map.put("sql",sql);
+        resultDTO.setMap(map);
+        return resultDTO;
+    }
+
 
 }

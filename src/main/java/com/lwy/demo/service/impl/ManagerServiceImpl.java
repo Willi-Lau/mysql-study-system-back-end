@@ -3,13 +3,17 @@ package com.lwy.demo.service.impl;
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SchoolDTO;
 import com.lwy.demo.TO.UserDTO;
+import com.lwy.demo.dao.mybatis.LoginHistoryDao;
 import com.lwy.demo.dao.mybatis.ManagerDao;
 import com.lwy.demo.dao.mybatis.SchoolDao;
 import com.lwy.demo.dao.mybatis.UserDao;
 import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
+import com.lwy.demo.entity.UserLoginHistory;
 import com.lwy.demo.service.ManagerService;
 import com.lwy.demo.utils.RedisUtil;
+import com.lwy.demo.utils.TimeUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +31,9 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Autowired
     private SchoolDao schoolDao;
+
+    @Autowired
+    private LoginHistoryDao loginHistoryDao;
 
     /**
      * 获取所有的用户列表
@@ -206,4 +213,62 @@ public class ManagerServiceImpl implements ManagerService {
         }
 
     }
+
+    @Override
+    public ResultDTO getUserLoginHistory(Integer id) throws ParseException {
+        ResultDTO resultDTO = new ResultDTO();
+        if(id == 0){
+            resultDTO.setType(false);
+            return resultDTO;
+        }
+        List<UserLoginHistory> userLoginHistoryList = loginHistoryDao.getUserLoginHistory(id);
+        for (UserLoginHistory userLoginHistory : userLoginHistoryList){
+            userLoginHistory.setLoginTime(TimeUtils.changeTimeLongToString(Long.parseLong(userLoginHistory.getLoginTime())));
+        }
+
+        resultDTO.setType(true);
+        resultDTO.setMap(new HashMap<>());
+        resultDTO.getMap().put("userLoginHistory",userLoginHistoryList);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getAllUserLoginHistory() throws ParseException {
+        ResultDTO resultDTO = new ResultDTO();
+        List<UserLoginHistory> allUserLoginHistoryList = loginHistoryDao.getAllUserLoginHistory();
+        resultDTO.setMap(new HashMap<>(16));
+        if(allUserLoginHistoryList.size() > 0){
+            for (UserLoginHistory userLoginHistory : allUserLoginHistoryList){
+                userLoginHistory.setLoginTime(TimeUtils.changeTimeLongToString(Long.parseLong(userLoginHistory.getLoginTime())));
+            }
+            resultDTO.getMap().put("userLoginHistory",allUserLoginHistoryList);
+            resultDTO.setType(true);
+        }
+        else {
+            resultDTO.getMap().put("userLoginHistory",new ArrayList<>());
+        }
+
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getAllUserLoginHistoryByDate(String startTime,String endTime) throws ParseException {
+        ResultDTO resultDTO = new ResultDTO();
+        String startTimeLong = String.valueOf(TimeUtils.changeTimeStringToLongDate(startTime) + 86400000L);
+        String endTimeLong = String.valueOf(TimeUtils.changeTimeStringToLongDate(endTime) + 86400000L * 2);
+        HashMap<String,String> map = new HashMap<>(16);
+        map.put("startTime",startTimeLong);
+        map.put("endTime",endTimeLong);
+        List<UserLoginHistory> allUserLoginHistoryByDateList = loginHistoryDao.getAllUserLoginHistoryByDate(map);
+        for (UserLoginHistory userLoginHistory : allUserLoginHistoryByDateList){
+            userLoginHistory.setLoginTime(TimeUtils.changeTimeLongToString(Long.parseLong(userLoginHistory.getLoginTime())));
+        }
+        //1649779200000 1649692800000
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("userLoginHistory",allUserLoginHistoryByDateList);
+        resultDTO.setType(true);
+        return resultDTO;
+    }
+
+
 }

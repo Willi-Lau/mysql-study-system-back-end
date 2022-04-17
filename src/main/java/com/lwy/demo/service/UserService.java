@@ -12,4 +12,6 @@ public interface UserService {
     public UserDTO getUserInfo(User user) throws SQLException;
 
     public List<SqlResultDTO> getSql(User user) throws Exception;
+
+    public User getUserById(Integer id) throws Exception;
 }

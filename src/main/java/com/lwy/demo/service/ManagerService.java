@@ -16,4 +16,10 @@ public interface ManagerService {
     public ResultDTO getSchoolList() throws ParseException;
 
     public ResultDTO getConditionStudent(HashMap<String,String> map);
+
+    public ResultDTO getUserLoginHistory(Integer id) throws ParseException;
+
+    public ResultDTO getAllUserLoginHistory() throws ParseException;
+
+    public ResultDTO getAllUserLoginHistoryByDate(String startTime,String endTime) throws ParseException;
 }

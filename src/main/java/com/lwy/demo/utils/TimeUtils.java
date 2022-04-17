@@ -42,4 +42,17 @@ public class TimeUtils {
         long time1 = parse.getTime();
         return time1;
     }
+
+    /**
+     * 日期转时间戳
+     * @param time
+     * @return
+     * @throws ParseException
+     */
+    public static Long changeTimeStringToLongDate(String time) throws ParseException {
+        SimpleDateFormat myFormat=new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        Date parse = myFormat.parse(time);
+        long time1 = parse.getTime();
+        return time1;
+    }
 }

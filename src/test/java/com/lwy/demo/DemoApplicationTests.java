@@ -20,10 +20,7 @@ class DemoApplicationTests {
 
     @Test
     void contextLoads2() throws Exception {
-        long l = TimeUtils.getNowTime().longValue();
-        String s = TimeUtils.changeTimeLongToString(l);
-        System.out.println("-----------------------"+s);
-        System.out.println("-----------------------"+TimeUtils.changeTimeStringToLong(s));
+        System.out.println(1649779200000L - 1649692800000L);
 
     }
 

@@ -55,12 +55,18 @@ public class SqlServiceImpl implements SqlService {
         //执行sql 执行查询返回查询结果
         List<Map<String, String>> selectExecuteList = sqlDao.selectExecute(user, sql2, columnNameList);
         //根据字段进行封装 封装结果到Map 结构为List<Map<String,String>>
-        String errorLog = selectExecuteList.get(0).get("errorLog");
-        if (StringUtils.isEmpty(errorLog)) {
-            resultDTO.setObject("sql success");
-        } else {
-            resultDTO.setObject(errorLog);
+        if(selectExecuteList.size() != 0){
+            String errorLog = selectExecuteList.get(0).get("errorLog");
+            if (StringUtils.isEmpty(errorLog)) {
+                resultDTO.setObject("sql success");
+            } else {
+                resultDTO.setObject(errorLog);
+            }
         }
+        else {
+            resultDTO.setObject("sql success");
+        }
+
 
         resultDTO.setMap(new HashMap<>(16));
         resultDTO.getMap().put("column", columnNameList);

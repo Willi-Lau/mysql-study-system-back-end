@@ -66,4 +66,31 @@ public class ManagerController {
         }
         return managerService.getConditionStudent(map);
     }
+
+    /**
+     * 指定用户登录历史记录 根据 id
+     */
+    @PostMapping("/getUserLoginHistory")
+    public ResultDTO getUserLoginHistory(@RequestParam(defaultValue = "0") Integer id) throws ParseException {
+        return managerService.getUserLoginHistory(id);
+    }
+
+
+    /**
+     * 所有用户登录历史记录
+     */
+    @PostMapping("/getAllUserLoginHistory")
+    public ResultDTO getAllUserLoginHistory() throws ParseException {
+        return managerService.getAllUserLoginHistory();
+    }
+
+    /**
+     * 所有用户指定日期内登录历史记录
+     */
+    @PostMapping("/getAllUserLoginHistoryByDate")
+    public ResultDTO getAllUserLoginHistoryByDate (@RequestParam(defaultValue = "2020-01-01") String startTime,@RequestParam(defaultValue = "2080-04-04") String endTime) throws ParseException {
+        return managerService.getAllUserLoginHistoryByDate(startTime, endTime);
+    }
+
+
 }

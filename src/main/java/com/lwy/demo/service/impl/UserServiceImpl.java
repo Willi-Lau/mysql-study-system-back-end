@@ -3,6 +3,7 @@ package com.lwy.demo.service.impl;
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SqlResultDTO;
 import com.lwy.demo.TO.UserDTO;
+import com.lwy.demo.dao.jdbc.SqlDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
 import com.lwy.demo.service.UserService;
@@ -19,6 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SqlService sqlService;
+
+    @Autowired
+    private SqlDao sqlDao;
 
     @Override
     public UserDTO getUserInfo(User user) throws SQLException {
@@ -93,5 +97,10 @@ public class UserServiceImpl implements UserService {
             sqlResultDTOList.add(sqlResultDTO);
         }
         return sqlResultDTOList;
+    }
+
+    @Override
+    public User getUserById(Integer id) throws Exception {
+        return sqlDao.user(id);
     }
 }

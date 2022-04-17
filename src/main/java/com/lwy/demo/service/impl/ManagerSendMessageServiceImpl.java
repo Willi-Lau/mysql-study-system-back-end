@@ -15,13 +15,12 @@ import java.util.concurrent.ExecutionException;
 public class ManagerSendMessageServiceImpl implements ManagerSendMessageService {
 
 
-
     @Autowired
     private KafkaProducer kafkaProduct;
 
     @Override
     public ResultDTO sentMeaasge(String content) throws ExecutionException, InterruptedException {
-        kafkaProduct.data("managerSendMessage", "content");
+        kafkaProduct.data("managerSendMessage", content);
         ResultDTO resultDTO = new ResultDTO();
         return resultDTO;
     }
