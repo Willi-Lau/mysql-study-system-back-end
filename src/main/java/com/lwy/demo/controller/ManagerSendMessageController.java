@@ -18,12 +18,12 @@ public class ManagerSendMessageController {
 
     //发送群体通知 kafka -> SSE
     @PostMapping("/sendMeaasge")
-    public ResultDTO sendMeaasge(@RequestParam String content) throws ExecutionException, InterruptedException {
+    public ResultDTO sendMeaasge(@RequestParam String content ,@RequestParam String token) throws Exception {
         ResultDTO resultDTO = new ResultDTO();
         if(StringUtils.isEmpty(content)){
             resultDTO.setType(false);
             return resultDTO;
         }
-        return managerSendMessageService.sentMeaasge(content);
+        return managerSendMessageService.sentMeaasge(content,token);
     }
 }

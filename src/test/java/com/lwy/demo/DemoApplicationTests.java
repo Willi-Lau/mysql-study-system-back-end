@@ -21,6 +21,7 @@ class DemoApplicationTests {
     @Test
     void contextLoads2() throws Exception {
         System.out.println(1649779200000L - 1649692800000L);
+        System.out.println((long) 365 * 1000 * 60 * 60 * 24);
 
     }
 

@@ -3,10 +3,9 @@ package com.lwy.demo.service.impl;
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SchoolDTO;
 import com.lwy.demo.TO.UserDTO;
-import com.lwy.demo.dao.mybatis.LoginHistoryDao;
-import com.lwy.demo.dao.mybatis.ManagerDao;
-import com.lwy.demo.dao.mybatis.SchoolDao;
-import com.lwy.demo.dao.mybatis.UserDao;
+import com.lwy.demo.config.InfoConfig;
+import com.lwy.demo.dao.mybatis.*;
+import com.lwy.demo.entity.ManagerRenewSchoolLog;
 import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.entity.UserLoginHistory;
@@ -34,6 +33,12 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Autowired
     private LoginHistoryDao loginHistoryDao;
+
+    @Autowired
+    private ManagerRenewSchoolLogDao managerRenewSchoolLogDao;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 获取所有的用户列表
@@ -227,8 +232,27 @@ public class ManagerServiceImpl implements ManagerService {
         }
 
         resultDTO.setType(true);
-        resultDTO.setMap(new HashMap<>());
+        resultDTO.setMap(new HashMap<>(16));
         resultDTO.getMap().put("userLoginHistory",userLoginHistoryList);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getUserLoginHistoryByDate(Integer id, String startTime, String endTime) throws ParseException {
+        ResultDTO resultDTO = new ResultDTO();
+        String startTimeLong = String.valueOf(TimeUtils.changeTimeStringToLongDate(startTime) + 86400000L);
+        String endTimeLong = String.valueOf(TimeUtils.changeTimeStringToLongDate(endTime) + 86400000L * 2);
+        HashMap<String,Object> map = new HashMap<>(16);
+        map.put("startTime",startTimeLong);
+        map.put("endTime",endTimeLong);
+        map.put("id",id);
+        List<UserLoginHistory> userLoginHistoryByDate = loginHistoryDao.getUserLoginHistoryByDate(map);
+        for (UserLoginHistory userLoginHistory : userLoginHistoryByDate){
+            userLoginHistory.setLoginTime(TimeUtils.changeTimeLongToString(Long.parseLong(userLoginHistory.getLoginTime())));
+        }
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("userLoginHistory",userLoginHistoryByDate);
+        resultDTO.setType(true);
         return resultDTO;
     }
 
@@ -263,9 +287,51 @@ public class ManagerServiceImpl implements ManagerService {
         for (UserLoginHistory userLoginHistory : allUserLoginHistoryByDateList){
             userLoginHistory.setLoginTime(TimeUtils.changeTimeLongToString(Long.parseLong(userLoginHistory.getLoginTime())));
         }
-        //1649779200000 1649692800000
         resultDTO.setMap(new HashMap<>(16));
         resultDTO.getMap().put("userLoginHistory",allUserLoginHistoryByDateList);
+        resultDTO.setType(true);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO renewSchool(String token,Integer schoolId, String renewDuration) {
+        //读取指定schoolId的到期时间
+        School school = schoolDao.getSchool(schoolId);
+        long time = Long.parseLong(school.getDeadline());
+        //修改学校过期时间 转为天数
+        Integer renewDurationDate = Integer.parseInt(renewDuration);
+        Long renewDurationLong = (long) renewDurationDate * 1000 * 60 * 60 * 24;
+        HashMap<String,Object> map = new HashMap<>(16);
+        map.put("renewDuration",time + renewDurationLong);
+        map.put("id",schoolId);
+        schoolDao.renewSchool(map);
+        //插入到学校过期日志中
+        Integer managerId = (Integer) redisUtil.get(InfoConfig.REDIS_TOKEN_MANAGER_LOGIN_INFO + token);
+        ManagerRenewSchoolLog managerRenewSchoolLog = new ManagerRenewSchoolLog();
+        managerRenewSchoolLog.setManagerId(managerId);
+        managerRenewSchoolLog.setSchoolId(schoolId);
+        managerRenewSchoolLog.setRenewDurationDay(renewDurationDate);
+        managerRenewSchoolLogDao.insertManagerRenewSchoolLog(managerRenewSchoolLog);
+        //返回
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setType(true);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO insertSchool(School school) throws ParseException {
+        ResultDTO resultDTO = new ResultDTO();
+        //查询所有的学校名字查看是否注册过
+        List<School> schoolList = schoolDao.getSchoolList();
+        for (School sqlSchool : schoolList){
+            if(sqlSchool.getName().equals(school.getName())){
+                resultDTO.setType(false);
+                return resultDTO;
+            }
+        }
+        school.setCreateTime(String.valueOf(System.currentTimeMillis()));
+        school.setDeadline(String.valueOf(TimeUtils.changeTimeStringToLongDate(school.getDeadline())));
+        schoolDao.insertSchool(school);
         resultDTO.setType(true);
         return resultDTO;
     }

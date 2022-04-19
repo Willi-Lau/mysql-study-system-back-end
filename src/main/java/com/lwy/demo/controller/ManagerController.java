@@ -1,6 +1,9 @@
 package com.lwy.demo.controller;
 
+
+import com.alibaba.fastjson.JSONArray;
 import com.lwy.demo.TO.ResultDTO;
+import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +80,17 @@ public class ManagerController {
 
 
     /**
+     * 指定用户登录历史记录 根据 id
+     */
+    @PostMapping("/getUserLoginHistoryByDate")
+    public ResultDTO getUserLoginHistoryByDate(@RequestParam(defaultValue = "0") Integer id,
+                                               @RequestParam(defaultValue = "2020-01-01") String startTime,
+                                               @RequestParam(defaultValue = "2080-04-04") String endTime
+                                               ) throws ParseException {
+        return managerService.getUserLoginHistoryByDate(id,startTime,endTime);
+    }
+
+    /**
      * 所有用户登录历史记录
      */
     @PostMapping("/getAllUserLoginHistory")
@@ -88,9 +102,35 @@ public class ManagerController {
      * 所有用户指定日期内登录历史记录
      */
     @PostMapping("/getAllUserLoginHistoryByDate")
-    public ResultDTO getAllUserLoginHistoryByDate (@RequestParam(defaultValue = "2020-01-01") String startTime,@RequestParam(defaultValue = "2080-04-04") String endTime) throws ParseException {
+    public ResultDTO getAllUserLoginHistoryByDate (@RequestParam(defaultValue = "2020-01-01") String startTime,
+                                                   @RequestParam(defaultValue = "2080-04-04") String endTime) throws ParseException {
         return managerService.getAllUserLoginHistoryByDate(startTime, endTime);
     }
 
+    /**
+     * 给学校续费
+     * @param renewDuration 以天为单位
+     */
+    @PostMapping("/renewSchool")
+    public ResultDTO renewSchool(
+                                 @RequestParam String token,
+                                 @RequestParam String schoolIdList,
+                                 @RequestParam String renewDuration) throws ParseException {
+        //特殊处理 json list
+        List<Integer> list = JSONArray.parseArray(schoolIdList, Integer.class);
+        for (Integer schoolId : list){
+            managerService.renewSchool(token,schoolId,renewDuration);
+        }
+        return new ResultDTO();
+    }
+
+    /**
+     * 新建学校
+     * @param school
+     */
+    @PostMapping("/insertSchool")
+    public ResultDTO insertSchool(@RequestBody School school) throws ParseException {
+        return managerService.insertSchool(school);
+    }
 
 }

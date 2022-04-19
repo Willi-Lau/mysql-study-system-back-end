@@ -1,6 +1,7 @@
 package com.lwy.demo.service;
 
 import com.lwy.demo.TO.ResultDTO;
+import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
 
 import java.text.ParseException;
@@ -19,7 +20,13 @@ public interface ManagerService {
 
     public ResultDTO getUserLoginHistory(Integer id) throws ParseException;
 
+    public ResultDTO getUserLoginHistoryByDate(Integer id,String startTime,String endTime) throws ParseException;
+
     public ResultDTO getAllUserLoginHistory() throws ParseException;
 
     public ResultDTO getAllUserLoginHistoryByDate(String startTime,String endTime) throws ParseException;
+
+    public ResultDTO renewSchool(String token,Integer schoolId,String renewDuration);
+
+    public ResultDTO insertSchool(School school) throws ParseException;
 }

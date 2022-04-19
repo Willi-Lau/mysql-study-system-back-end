@@ -43,4 +43,11 @@ public interface LoginHistoryDao {
      */
     @Select("select * from userloginhistory where loginTime >= #{startTime} and loginTime <= #{endTime}")
     List<UserLoginHistory> getAllUserLoginHistoryByDate(HashMap<String,String> map);
+
+    /**
+     * 查询指定用户指定日期历史记录
+     */
+    @Select("select * from userloginhistory where loginTime >= #{startTime} and loginTime <= #{endTime} and userId = #{id}")
+    List<UserLoginHistory> getUserLoginHistoryByDate(HashMap<String,Object> map);
+
 }

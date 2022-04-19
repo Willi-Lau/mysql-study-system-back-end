@@ -6,5 +6,5 @@ import java.util.concurrent.ExecutionException;
 
 public interface ManagerSendMessageService {
 
-    public ResultDTO sentMeaasge(String content) throws ExecutionException, InterruptedException;
+    public ResultDTO sentMeaasge(String content,String token) throws Exception;
 }
