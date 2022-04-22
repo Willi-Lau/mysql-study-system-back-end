@@ -372,5 +372,19 @@ public class ManagerServiceImpl implements ManagerService {
         return resultDTO;
     }
 
+    @Override
+    public ResultDTO getSchoolRenewHistory(Integer schoolId) throws Exception {
+        //根据学校id查找续费历史
+        List<ManagerRenewSchoolLog> renewHistoryList = managerRenewSchoolLogDao.getRenewHistoryBySchoolId(schoolId);
+        for (ManagerRenewSchoolLog managerRenewSchoolLog : renewHistoryList){
+            managerRenewSchoolLog.setCreateTime(TimeUtils.changeTimeLongToString(Long.parseLong(managerRenewSchoolLog.getCreateTime())));
+        }
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setType(true);
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("renewHistoryList",renewHistoryList);
+        return resultDTO;
+    }
+
 
 }

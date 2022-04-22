@@ -31,4 +31,6 @@ public interface ManagerService {
     public ResultDTO insertSchool(String name , String deadline) throws ParseException;
 
     public ResultDTO getSchoolByName(String name) throws Exception;
+
+    public ResultDTO getSchoolRenewHistory(Integer schoolId) throws Exception;
 }

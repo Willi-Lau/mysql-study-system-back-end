@@ -45,5 +45,8 @@ public class MessageController {
         logger.info("SSE发送消息1"+content);
         return ResponseEntity.ok("WebSocket 推送消息给所有人");
     }
+
+    //急救 http://localhost:9999/subscribe  先点这个 在刷新 vue 学生端 就可以收到
+     //  http://localhost:9999/push/msg=hello
 }
 

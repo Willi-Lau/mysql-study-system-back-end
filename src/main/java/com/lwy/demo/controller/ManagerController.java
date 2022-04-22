@@ -143,4 +143,12 @@ public class ManagerController {
         return managerService.getSchoolByName(name);
     }
 
+    /**
+     * 查看指定学校续费历史
+     */
+    @PostMapping("/getSchoolRenewHistory")
+    public ResultDTO getSchoolRenewHistory(Integer schoolId) throws Exception {
+        return managerService.getSchoolRenewHistory(schoolId);
+    }
+
 }
