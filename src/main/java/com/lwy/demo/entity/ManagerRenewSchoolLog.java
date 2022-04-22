@@ -17,4 +17,5 @@ public class ManagerRenewSchoolLog implements Serializable {
     Integer managerId;
     Integer schoolId;
     Integer renewDurationDay;
+    String createTime;
 }

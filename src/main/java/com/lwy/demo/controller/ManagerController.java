@@ -126,11 +126,21 @@ public class ManagerController {
 
     /**
      * 新建学校
-     * @param school
+     * @param
      */
     @PostMapping("/insertSchool")
-    public ResultDTO insertSchool(@RequestBody School school) throws ParseException {
-        return managerService.insertSchool(school);
+    public ResultDTO insertSchool(@RequestParam String name,
+                                  @RequestParam String deadline) throws ParseException {
+        System.out.println(deadline);
+        return managerService.insertSchool(name,deadline);
+    }
+
+    /**
+     * 根据名字去es查找
+     */
+    @PostMapping("/getSchoolByName")
+    public ResultDTO getSchoolByName(@RequestParam String name) throws Exception{
+        return managerService.getSchoolByName(name);
     }
 
 }

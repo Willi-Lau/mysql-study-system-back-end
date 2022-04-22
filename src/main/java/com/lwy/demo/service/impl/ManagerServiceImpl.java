@@ -4,18 +4,21 @@ import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SchoolDTO;
 import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.config.InfoConfig;
+import com.lwy.demo.dao.elasticsearch.ESSchoolDao;
 import com.lwy.demo.dao.mybatis.*;
 import com.lwy.demo.entity.ManagerRenewSchoolLog;
 import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.entity.UserLoginHistory;
 import com.lwy.demo.service.ManagerService;
+import com.lwy.demo.utils.ElasticSearchSchoolUtils;
 import com.lwy.demo.utils.RedisUtil;
 import com.lwy.demo.utils.TimeUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.util.*;
@@ -39,6 +42,9 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private ElasticSearchSchoolUtils elasticSearchSchoolUtils;
 
     /**
      * 获取所有的用户列表
@@ -311,6 +317,7 @@ public class ManagerServiceImpl implements ManagerService {
         managerRenewSchoolLog.setManagerId(managerId);
         managerRenewSchoolLog.setSchoolId(schoolId);
         managerRenewSchoolLog.setRenewDurationDay(renewDurationDate);
+        managerRenewSchoolLog.setCreateTime(String.valueOf(System.currentTimeMillis()));
         managerRenewSchoolLogDao.insertManagerRenewSchoolLog(managerRenewSchoolLog);
         //返回
         ResultDTO resultDTO = new ResultDTO();
@@ -319,19 +326,48 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public ResultDTO insertSchool(School school) throws ParseException {
+    public ResultDTO insertSchool(String name ,String deadline) throws ParseException {
         ResultDTO resultDTO = new ResultDTO();
+        if(StringUtils.isEmpty(name) || StringUtils.isEmpty(deadline)){
+            resultDTO.setType(false);
+            resultDTO.setObject("params empty");
+            return resultDTO;
+        }
         //查询所有的学校名字查看是否注册过
         List<School> schoolList = schoolDao.getSchoolList();
         for (School sqlSchool : schoolList){
-            if(sqlSchool.getName().equals(school.getName())){
+            if(sqlSchool.getName().equals(name)){
                 resultDTO.setType(false);
+                resultDTO.setObject("include school");
                 return resultDTO;
             }
         }
+
+        School school = new School();
+        school.setName(name);
         school.setCreateTime(String.valueOf(System.currentTimeMillis()));
-        school.setDeadline(String.valueOf(TimeUtils.changeTimeStringToLongDate(school.getDeadline())));
+        school.setDeadline(String.valueOf(TimeUtils.changeTimeStringToLongDate(deadline.substring(0,10) + " "+deadline.substring(11,19))));
+        //存入mysql
         schoolDao.insertSchool(school);
+        resultDTO.setType(true);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getSchoolByName(String name) throws Exception {
+        ResultDTO resultDTO = new ResultDTO();
+        if(StringUtils.isEmpty(name)){
+            resultDTO.setType(false);
+            return resultDTO;
+        }
+        List<School> esNameList = elasticSearchSchoolUtils.getByName(name);
+        //修改时间单位
+        for(School school : esNameList){
+            school.setDeadline(TimeUtils.changeTimeLongToString(Long.parseLong(school.getDeadline())));
+            school.setCreateTime(TimeUtils.changeTimeLongToString(Long.parseLong(school.getCreateTime())));
+        }
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("schoolList",esNameList);
         resultDTO.setType(true);
         return resultDTO;
     }

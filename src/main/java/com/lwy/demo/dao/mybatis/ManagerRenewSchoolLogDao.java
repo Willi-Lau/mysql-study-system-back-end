@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ManagerRenewSchoolLogDao {
 
-    @Insert("insert into managerenewschoollog(managerId,schoolId,renewDurationDay) values(#{managerId},#{schoolId},#{renewDurationDay})")
+    @Insert("insert into managerenewschoollog(managerId,schoolId,renewDurationDay,createTime) values(#{managerId},#{schoolId},#{renewDurationDay},#{createTime})")
     void insertManagerRenewSchoolLog(ManagerRenewSchoolLog managerRenewSchoolLog);
 }

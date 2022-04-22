@@ -35,7 +35,17 @@ mybatis:
 server:
   port: 9999
 
+#es
+elasticsearch:
+  host: 127.0.0.1
+  port: 9200
 
+logging:
+  level:
+    com:
+      liuweiyi:
+        demo:
+          es: debug
 
 
 

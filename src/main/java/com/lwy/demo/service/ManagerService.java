@@ -28,5 +28,7 @@ public interface ManagerService {
 
     public ResultDTO renewSchool(String token,Integer schoolId,String renewDuration);
 
-    public ResultDTO insertSchool(School school) throws ParseException;
+    public ResultDTO insertSchool(String name , String deadline) throws ParseException;
+
+    public ResultDTO getSchoolByName(String name) throws Exception;
 }
