@@ -35,7 +35,7 @@ public class ManagerSendMessageServiceImpl implements ManagerSendMessageService 
         //存入广播记录表中
         Integer managerId = (Integer)redisUtil.get(InfoConfig.REDIS_TOKEN_MANAGER_LOGIN_INFO + token);
         ManagerBroadcast managerBroadcast = ManagerBroadcast.builder().context(content).managerId(managerId).time(String.valueOf(System.currentTimeMillis())).build();
-       managerBroadcastDao.insertManagerBroadcast(managerBroadcast);
+        managerBroadcastDao.insertManagerBroadcast(managerBroadcast);
         return resultDTO;
     }
 }

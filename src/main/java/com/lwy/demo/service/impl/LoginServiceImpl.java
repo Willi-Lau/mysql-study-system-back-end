@@ -51,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
         //首先判断username是否存在 利用布隆过滤器 因为存的是学号和身份证号不会更改
         boolean contains = bloomFilter.containsValue(username);
         if(!contains){
+            resultDTO.setObject("bloomFilter拦截");
             resultDTO.setType(false);
             return resultDTO;
         }
