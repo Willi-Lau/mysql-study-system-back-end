@@ -4,6 +4,8 @@ import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SqlResultDTO;
 import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.dao.jdbc.SqlDao;
+import com.lwy.demo.dao.mybatis.SchoolDao;
+import com.lwy.demo.dao.mybatis.UserDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
 import com.lwy.demo.service.UserService;
@@ -23,6 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SqlDao sqlDao;
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private SchoolDao schoolDao;
 
     @Override
     public UserDTO getUserInfo(User user) throws SQLException {
@@ -102,5 +110,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer id) throws Exception {
         return sqlDao.user(id);
+    }
+
+    @Override
+    public void changeUserInfo(String name, String phone, String university, String className,String studentNumber) {
+        HashMap<String,String> map = new HashMap<>();
+        map.put("name",name);
+        map.put("phone",phone);
+        map.put("university",university);
+        map.put("className",className);
+        map.put("studentNumber",studentNumber);
+        userDao.changeUserInfo(map);
+    }
+
+    @Override
+    public void changeSchoolNum(String newUniversity, String oldUniversity) {
+        schoolDao.addSchoolNum(newUniversity);
+        schoolDao.cutSchoolNum(oldUniversity);
     }
 }

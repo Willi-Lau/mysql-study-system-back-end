@@ -50,17 +50,17 @@ public class AddManagerToBloomFilter {
 
     @Test
     public void Test() throws JSONException {
-//
-//        List<User> userList = userDao.getUserList();
-//        for (User user : userList){
-//            redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user);
-//            redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user);
-//        }
-//
-//        List<Manager> managerList = managerDao.getManagerList();
-//        for (Manager manager : managerList){
-//            redisUtil.set(InfoConfig.REDIS_MANAGER_NUMBER + manager.getManagerNumber() , manager);
-//        }
+
+        List<User> userList = userDao.getUserList();
+        for (User user : userList){
+            redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user);
+            redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user);
+        }
+
+        List<Manager> managerList = managerDao.getManagerList();
+        for (Manager manager : managerList){
+            redisUtil.set(InfoConfig.REDIS_MANAGER_NUMBER + manager.getManagerNumber() , manager);
+        }
 
         List<School> schoolList = schoolDao.getSchoolList();
         esSchoolDao.saveAll(schoolList);
@@ -86,18 +86,18 @@ public class AddManagerToBloomFilter {
         System.out.println("----------------------------------------------------"+school);
     }
 
-//    @Autowired
-//    private ElasticSearchSchoolUtils elasticSearchSchoolUtils;
-//        @Test
-//    public void save(){
-//            List<School> all = elasticSearchSchoolUtils.getAll();
-//            all.forEach(System.out::println);
-//
-//            System.out.println("----------------------------------------");
-//
-//            List<School> list = elasticSearchSchoolUtils.getByName("北京大学");
-//            list.forEach(System.out::println);
-//        }
+    @Autowired
+    private ElasticSearchSchoolUtils elasticSearchSchoolUtils;
+        @Test
+    public void save(){
+            List<School> all = elasticSearchSchoolUtils.getAll();
+            all.forEach(System.out::println);
+
+            System.out.println("----------------------------------------");
+
+            List<School> list = elasticSearchSchoolUtils.getByName("北京理工");
+            list.forEach(System.out::println);
+        }
 
         @Test
         public void sb() throws ParseException {
@@ -107,4 +107,13 @@ public class AddManagerToBloomFilter {
             Long aLong = TimeUtils.changeTimeStringToLong(time.substring(0,10) + " "+time.substring(11,19));
             System.out.println(aLong);
         }
+    @Test
+    public void sb2() throws ParseException {
+            List<Integer> list1 = new ArrayList<>();
+            List<Integer> list2 = new ArrayList<>();
+
+        System.out.println(list1.equals(list2));
+
+    }
+
 }

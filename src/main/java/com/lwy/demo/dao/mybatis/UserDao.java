@@ -46,4 +46,9 @@ public interface UserDao {
      */
     @Select("select max(id) from user")
     Integer getMaxId();
+    /**
+     * 修改用户信息
+     */
+    @Update("update user set phone = #{phone} , university = #{university} , name = #{name} , className = #{className} where studentNumber = #{studentNumber}")
+    void changeUserInfo(HashMap<String,String> map);
 }

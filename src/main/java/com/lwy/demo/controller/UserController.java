@@ -53,5 +53,21 @@ public class UserController {
         return resultDTO;
     }
 
+    @PostMapping("/changeUserInfo")
+    public ResultDTO changeUserInfo(@RequestParam String name,
+                                    @RequestParam String phone,
+                                    @RequestParam String oldUniversity,
+                                    @RequestParam String newUniversity,
+                                    @RequestParam String className,
+                                    @RequestParam String studentNum) throws  Exception{
+        ResultDTO resultDTO = new ResultDTO();
+        //修改用户信息
+        userService.changeUserInfo(name,phone,newUniversity,className,studentNum);
+        //修改学校人数信息
+        userService.changeSchoolNum(newUniversity,oldUniversity);
+        return resultDTO;
+    }
+
+
 
 }

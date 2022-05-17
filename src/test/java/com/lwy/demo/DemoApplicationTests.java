@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Queue;
+import java.util.concurrent.*;
 
 @SpringBootTest
 class DemoApplicationTests {
@@ -20,8 +22,10 @@ class DemoApplicationTests {
 
     @Test
     void contextLoads2() throws Exception {
-        System.out.println(1649779200000L - 1649692800000L);
-        System.out.println((long) 365 * 1000 * 60 * 60 * 24);
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10,30,0, TimeUnit.SECONDS,new LinkedBlockingDeque<>());
+       threadPoolExecutor.execute(()->{
+           System.out.println("hahah");
+       });
 
     }
 

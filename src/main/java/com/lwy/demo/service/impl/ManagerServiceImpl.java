@@ -6,10 +6,7 @@ import com.lwy.demo.TO.UserDTO;
 import com.lwy.demo.config.InfoConfig;
 import com.lwy.demo.dao.elasticsearch.ESSchoolDao;
 import com.lwy.demo.dao.mybatis.*;
-import com.lwy.demo.entity.ManagerRenewSchoolLog;
-import com.lwy.demo.entity.School;
-import com.lwy.demo.entity.User;
-import com.lwy.demo.entity.UserLoginHistory;
+import com.lwy.demo.entity.*;
 import com.lwy.demo.service.ManagerService;
 import com.lwy.demo.utils.ElasticSearchSchoolUtils;
 import com.lwy.demo.utils.RedisUtil;
@@ -45,6 +42,12 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Autowired
     private ElasticSearchSchoolUtils elasticSearchSchoolUtils;
+
+    @Autowired
+    private AllTestDiscribeDao allTestDiscribeDao;
+
+    @Autowired
+    private TableColumnAttributeDao tableColumnAttributeDao;
 
     /**
      * 获取所有的用户列表
@@ -87,6 +90,22 @@ public class ManagerServiceImpl implements ManagerService {
 
     @Override
     public ResultDTO getSchoolList() throws ParseException {
+        List<School> schoolList = schoolDao.getSchoolList();
+        List<SchoolDTO> schoolDTOList = new ArrayList<>();
+        for (School school : schoolList) {
+            //没过期添加
+           // if (Long.parseLong(school.getDeadline()) > System.currentTimeMillis()) {
+                schoolDTOList.add(SchoolDTO.schoolTransformSchoolDTO(school));
+          //  }
+        }
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setMap(new HashMap<>(16));
+        resultDTO.getMap().put("schoolList", schoolDTOList);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getSchoolListTimeOut() throws ParseException {
         List<School> schoolList = schoolDao.getSchoolList();
         List<SchoolDTO> schoolDTOList = new ArrayList<>();
         for (School school : schoolList) {
@@ -383,6 +402,70 @@ public class ManagerServiceImpl implements ManagerService {
         resultDTO.setType(true);
         resultDTO.setMap(new HashMap<>(16));
         resultDTO.getMap().put("renewHistoryList",renewHistoryList);
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getAllTest() {
+        List<AllTestDiscribe> all = allTestDiscribeDao.getAll();
+        ResultDTO resultDTO = new ResultDTO();
+        HashMap map = new HashMap(16);
+        map.put("result",all);
+        resultDTO.setMap(map);
+
+        return resultDTO;
+    }
+
+    @Override
+    public ResultDTO getAllTableColumnAttribute() {
+        List<TableColumnAttribute> tableColumnAttributeDaoAll = tableColumnAttributeDao.getAll();
+        ResultDTO resultDTO = new ResultDTO();
+        HashMap map = new HashMap(16);
+        map.put("result",tableColumnAttributeDaoAll);
+        resultDTO.setMap(map);
+        return resultDTO;
+    }
+
+    @Override
+    public void updateTest(Integer id,String titleDiscribe,String tableName,String trueSQL) {
+        //根据表名获取表字段信息
+        TableColumnAttribute tableColumnAttribute = tableColumnAttributeDao.get(tableName);
+        AllTestDiscribe allTestDiscribe = new AllTestDiscribe();
+        allTestDiscribe.setId(id);
+        allTestDiscribe.setTitleDiscribe(titleDiscribe);
+        allTestDiscribe.setTableName(tableName);
+        allTestDiscribe.setTableColumn(tableColumnAttribute.getTableColumn());
+        allTestDiscribe.setTrueSQL(trueSQL);
+        allTestDiscribeDao.update(allTestDiscribe);
+    }
+
+    @Override
+    public void insertTest(String titleDiscribe, String tableName, String trueSQL) {
+        TableColumnAttribute tableColumnAttribute = tableColumnAttributeDao.get(tableName);
+        AllTestDiscribe allTestDiscribe = new AllTestDiscribe();
+        allTestDiscribe.setTitleDiscribe(titleDiscribe);
+        allTestDiscribe.setTableName(tableName);
+        allTestDiscribe.setTableColumn(tableColumnAttribute.getTableColumn());
+        allTestDiscribe.setTrueSQL(trueSQL);
+        allTestDiscribeDao.insert(allTestDiscribe);
+    }
+
+    @Override
+    public void deleteTest(Integer id) {
+        allTestDiscribeDao.delete(id);
+    }
+
+    @Override
+    public ResultDTO selectByCondition(Integer id, String describe, String table) {
+        HashMap map = new HashMap();
+        map.put("discribe","%"+describe+"%");
+        map.put("id",id);
+        map.put("table",table);
+        List<AllTestDiscribe> allTestDiscribes = allTestDiscribeDao.selectByCondition(map);
+        ResultDTO resultDTO = new ResultDTO();
+        HashMap map2 = new HashMap(16);
+        map2.put("result",allTestDiscribes);
+        resultDTO.setMap(map2);
         return resultDTO;
     }
 

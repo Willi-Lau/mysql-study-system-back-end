@@ -3,9 +3,11 @@ package com.lwy.demo.controller;
 import com.lwy.demo.TO.ResultDTO;
 import com.lwy.demo.TO.SqlResultDTO;
 import com.lwy.demo.TO.UserDTO;
+import com.lwy.demo.dao.mybatis.AllTestDiscribeDao;
 import com.lwy.demo.entity.SqlResult;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
+import com.lwy.demo.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,9 @@ public class SqlController {
 
     @Autowired
     private SqlService sqlService;
+
+    @Autowired
+    private TestService testService;
 
     @PostMapping("/executeSql")
     public ResultDTO executeSql(@RequestParam String sql,
@@ -96,6 +101,30 @@ public class SqlController {
     public ResultDTO getExampleSql() {
         ResultDTO exampleSql = sqlService.getExampleSql();
         return exampleSql;
+    }
+
+    /**
+     * 做题部分
+     */
+    @PostMapping("/getAllId")
+    public ResultDTO getAllId(){
+        return testService.getAllTestId();
+    }
+
+    @PostMapping("/getTestDiscribe")
+    public ResultDTO getTestDiscribe(@RequestParam Integer id) throws Exception{
+        return testService.getTestDiscribe(id);
+    }
+
+    @PostMapping("/runSQL")
+    public ResultDTO runSQL(@RequestParam String token,
+                            @RequestParam String userSQL,
+                            @RequestParam Integer testId
+                            ) throws Exception {
+        //根据token查找id
+        User user = sqlService.user(token);
+        ResultDTO resultDTO = testService.runSQL(user.getId(), testId, userSQL , user);
+        return resultDTO;
     }
 
 }

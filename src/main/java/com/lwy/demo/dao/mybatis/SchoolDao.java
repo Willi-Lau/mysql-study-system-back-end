@@ -22,6 +22,11 @@ public interface SchoolDao {
     @Update("update school set studentNum = studentNum + 1 where name = #{name}")
     void addSchoolNum(String name);
     /**
+     * 指定学校人数-1
+     */
+    @Update("update school set studentNum = studentNum - 1 where name = #{name}")
+    void cutSchoolNum(String name);
+    /**
      * 给学校进行续期
      */
     @Update("update school set deadline = #{renewDuration} where id = #{id}")

@@ -72,7 +72,8 @@ public class KafkaConsumer {
             //获取修改的数据
             HashMap<String,String> schoolMap = this.analysisKafkaResultData(jsonObject);
             //拼接School
-            School school = School.builder().name(schoolMap.get("name"))
+            School school = School.builder()
+                    .name(schoolMap.get("name"))
                     .id(Integer.parseInt(schoolMap.get("id")))
                     .createTime(schoolMap.get("createTime"))
                     .deadline(schoolMap.get("deadline"))

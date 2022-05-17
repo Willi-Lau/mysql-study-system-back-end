@@ -1,8 +1,10 @@
 package com.lwy.demo.service;
 
 import com.lwy.demo.TO.ResultDTO;
+import com.lwy.demo.entity.AllTestDiscribe;
 import com.lwy.demo.entity.School;
 import com.lwy.demo.entity.User;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -15,6 +17,8 @@ public interface ManagerService {
     public void changeState(Integer id,Boolean state);
 
     public ResultDTO getSchoolList() throws ParseException;
+
+    public ResultDTO getSchoolListTimeOut() throws ParseException;
 
     public ResultDTO getConditionStudent(HashMap<String,String> map);
 
@@ -33,4 +37,16 @@ public interface ManagerService {
     public ResultDTO getSchoolByName(String name) throws Exception;
 
     public ResultDTO getSchoolRenewHistory(Integer schoolId) throws Exception;
+
+    public ResultDTO getAllTest();
+
+    public ResultDTO getAllTableColumnAttribute();
+
+    public void updateTest(Integer id,String titleDiscribe,String tableName,String trueSQL);
+
+    public void insertTest(String titleDiscribe,String tableName,String trueSQL);
+
+    public void deleteTest(Integer id);
+
+    public ResultDTO selectByCondition(Integer id,String describe,String table);
 }

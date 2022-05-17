@@ -38,6 +38,11 @@ public class ManagerController {
         return managerService.getSchoolList();
     }
 
+    @PostMapping("/getSchoolListTimeOut")
+    public ResultDTO getSchoolListTimeOut() throws ParseException {
+        return managerService.getSchoolListTimeOut();
+    }
+
     @PostMapping("/getConditionStudent")
     public ResultDTO getConditionStudent(@RequestParam(defaultValue = "查询所有") String idOptionsValue,
                                          @RequestParam String id,
@@ -131,7 +136,6 @@ public class ManagerController {
     @PostMapping("/insertSchool")
     public ResultDTO insertSchool(@RequestParam String name,
                                   @RequestParam String deadline) throws ParseException {
-        System.out.println(deadline);
         return managerService.insertSchool(name,deadline);
     }
 
@@ -151,4 +155,52 @@ public class ManagerController {
         return managerService.getSchoolRenewHistory(schoolId);
     }
 
+    /**
+     * 获取所有的题目
+     */
+    @PostMapping("/getAllTest")
+    public ResultDTO getAllTest() throws Exception {
+        return managerService.getAllTest();
+    }
+
+    /**
+     * 获取所有的表
+     */
+    @PostMapping("/getAllTableColumnAttribute")
+    public ResultDTO getAllTableColumnAttribute() throws Exception {
+        return managerService.getAllTableColumnAttribute();
+    }
+
+    /**
+     * 获取所有的表
+     */
+    @PostMapping("/updateTest")
+    public void updateTest(@RequestParam Integer id,
+                                @RequestParam String titleDiscribe,
+                                @RequestParam String tableName,
+                                @RequestParam String trueSQL
+                                ) throws Exception {
+        managerService.updateTest(id,titleDiscribe,tableName,trueSQL);
+    }
+
+    @PostMapping("/insertTest")
+    public void insertTest(
+                           @RequestParam String titleDiscribe,
+                           @RequestParam String tableName,
+                           @RequestParam String trueSQL
+    ) throws Exception {
+        managerService.insertTest(titleDiscribe,tableName,trueSQL);
+    }
+
+    @PostMapping("/deleteTest")
+    public void deleteTest(@RequestParam Integer id) throws Exception {
+        managerService.deleteTest(id);
+    }
+
+    @PostMapping("/selectByCondition")
+    public ResultDTO selectByCondition(@RequestParam(defaultValue = "0") Integer id,
+                                  @RequestParam(defaultValue = "") String describe,
+                                  @RequestParam(defaultValue = "") String table) throws Exception {
+        return managerService.selectByCondition(id,describe,table);
+    }
 }
