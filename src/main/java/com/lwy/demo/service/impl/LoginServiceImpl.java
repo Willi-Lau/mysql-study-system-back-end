@@ -105,6 +105,7 @@ public class LoginServiceImpl implements LoginService {
         String token = UUID.randomUUID().toString();
         //key为 uuid-token value 为user表的id 为了方便后续的验证操作
         redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+token,id,60 * 60 * 24);
+        redisUtil.set(InfoConfig.REDIS_TOKEN_LOGIN_INFO+id,token,60 * 60 * 24);
         resultDTO.setObject(token);
         //存进用户登录历史记录表中
         UserLoginHistory userLoginHistory = new UserLoginHistory();

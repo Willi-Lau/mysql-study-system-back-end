@@ -9,6 +9,7 @@ import com.lwy.demo.dao.mybatis.UserDao;
 import com.lwy.demo.entity.User;
 import com.lwy.demo.service.SqlService;
 import com.lwy.demo.service.UserService;
+import com.lwy.demo.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SchoolDao schoolDao;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public UserDTO getUserInfo(User user) throws SQLException {
@@ -114,6 +118,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserInfo(String name, String phone, String university, String className,String studentNumber) {
+        //修改redis phone-set
+        //获取旧电话
+        User user = userDao.getUser(studentNumber);
+        redisUtil.setRemove("USER_PHONE_NUMBER_SET",user.getPhone());
+        redisUtil.sSet("USER_PHONE_NUMBER_SET",phone);
+
+        //添加新的
         HashMap<String,String> map = new HashMap<>();
         map.put("name",name);
         map.put("phone",phone);
@@ -121,6 +132,7 @@ public class UserServiceImpl implements UserService {
         map.put("className",className);
         map.put("studentNumber",studentNumber);
         userDao.changeUserInfo(map);
+
     }
 
     @Override

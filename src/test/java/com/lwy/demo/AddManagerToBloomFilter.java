@@ -51,20 +51,30 @@ public class AddManagerToBloomFilter {
     @Test
     public void Test() throws JSONException {
 
+//        List<User> userList = userDao.getUserList();
+//        for (User user : userList){
+//            redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user);
+//            redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user);
+//        }
+//
+//        List<Manager> managerList = managerDao.getManagerList();
+//        for (Manager manager : managerList){
+//            redisUtil.set(InfoConfig.REDIS_MANAGER_NUMBER + manager.getManagerNumber() , manager);
+//        }
+//
+//        List<School> schoolList = schoolDao.getSchoolList();
+//        esSchoolDao.saveAll(schoolList);
+
+//        redisUtil.set(InfoConfig.REDIS_SQL_EXAMPLE_+"SELECT_MUTIPLY","select * from student left join studentinnfo on student.id = studentinnfo.id left join user on user.id = student.id");
+//        redisUtil.set(InfoConfig.REDIS_SQL_EXAMPLE_+"SELECT_SON","select * from student where id in (select id from user)");
+//    }
+
         List<User> userList = userDao.getUserList();
         for (User user : userList){
-            redisUtil.set(InfoConfig.REDIS_USER_STUDENT_NUMBER+user.getStudentNumber(),user);
-            redisUtil.set(InfoConfig.REDIS_USER_IDENTITY_CARD_NUMBER+user.getIdentityCardNumber(),user);
+            redisUtil.sSet("USER_ID_NUMBER_SET",user.getIdentityCardNumber());
+            redisUtil.sSet("USER_STUDENT_NUMBER_SET",user.getStudentNumber());
+            redisUtil.sSet("USER_PHONE_NUMBER_SET",user.getPhone());
         }
-
-        List<Manager> managerList = managerDao.getManagerList();
-        for (Manager manager : managerList){
-            redisUtil.set(InfoConfig.REDIS_MANAGER_NUMBER + manager.getManagerNumber() , manager);
-        }
-
-        List<School> schoolList = schoolDao.getSchoolList();
-        esSchoolDao.saveAll(schoolList);
-
     }
 
     //模板

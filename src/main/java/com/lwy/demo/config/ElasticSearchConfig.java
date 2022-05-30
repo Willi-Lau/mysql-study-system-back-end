@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfig
 /**
  * es 核心类
  */
+@EqualsAndHashCode(callSuper = true)
 @Configuration
 @ConfigurationProperties(prefix = "elasticsearch")   //关联 application.yaml
 @Data

@@ -157,6 +157,18 @@ public class SqlServiceImpl implements SqlService {
         map4.put("example", showTablesExample);
         map4.put("type", "获取所有的表的名字");
         resultList.add(map4);
+        //查询多表查询
+        String selectMutiplyExample = (String) redisUtil.get(InfoConfig.REDIS_SQL_EXAMPLE_ + "SELECT_MUTIPLY");
+        HashMap<String, String> map5 = new HashMap<>(16);
+        map5.put("example", selectMutiplyExample);
+        map5.put("type", "多表查询");
+        resultList.add(map5);
+        //查询子查询
+        String selectSonExample = (String) redisUtil.get(InfoConfig.REDIS_SQL_EXAMPLE_ + "SELECT_SON");
+        HashMap<String, String> map6 = new HashMap<>(16);
+        map6.put("example", selectSonExample);
+        map6.put("type", "子查询");
+        resultList.add(map6);
 
         resultDTO.getMap().put("result", resultList);
         List<String> columnNameList = new ArrayList<>();

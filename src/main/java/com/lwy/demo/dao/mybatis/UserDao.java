@@ -23,7 +23,6 @@ public interface UserDao {
      * @return password
      */
     @Select("select * from user where studentNumber = #{username} or identityCardNumber = #{username}")
-
     User getUser(String username);
     /**
      * 修改指定用户的封禁状态
